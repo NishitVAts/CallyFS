@@ -265,30 +265,7 @@ class UserProfile: ObservableObject {
     }
 }
 
-// MARK: - Extensions
 
-extension workoutRange {
-    var activityMultiplier: Double {
-        switch self {
-        case .nowAndThen:
-            return 1.2 // Sedentary
-        case .few:
-            return 1.55 // Moderately active (3-5 days/week)
-        case .athelete:
-            return 1.725 // Very active (6-7 days/week)
-        }
-    }
-    
-    var description: String {
-        switch self {
-        case .nowAndThen:
-            return "1-2 workouts per week"
-        case .few:
-            return "3-5 workouts per week"
-        case .athelete:
-            return "6+ workouts per week"
-        }
-    }
-}
+
 
 

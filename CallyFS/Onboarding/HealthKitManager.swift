@@ -54,22 +54,33 @@ final class HealthKitManager {
               let gender = HKObjectType.characteristicType(forIdentifier: .biologicalSex),
               let height = HKObjectType.quantityType(forIdentifier: .height),
               let weight = HKObjectType.quantityType(forIdentifier: .bodyMass),
-              let stepCount = HKObjectType.quantityType(forIdentifier: .stepCount)
+              let stepCount = HKObjectType.quantityType(forIdentifier: .stepCount),
+              let activeEnergy = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned),
+              let dietaryEnergy = HKObjectType.quantityType(forIdentifier: .dietaryEnergyConsumed),
+              let protein = HKObjectType.quantityType(forIdentifier: .dietaryProtein),
+              let carbs = HKObjectType.quantityType(forIdentifier: .dietaryCarbohydrates),
+              let fat = HKObjectType.quantityType(forIdentifier: .dietaryFatTotal)
         else { return nil }
         
-        return [dob, gender, height, weight, stepCount]
+        return [dob, gender, height, weight, stepCount, activeEnergy, dietaryEnergy, protein, carbs, fat]
     }
     
     // MARK: - Share Types
     private func getShareTypes() -> Set<HKSampleType>? {
-        guard let weight = HKObjectType.quantityType(forIdentifier: .bodyMass)
+        guard let weight = HKObjectType.quantityType(forIdentifier: .bodyMass),
+              let dietaryEnergy = HKObjectType.quantityType(forIdentifier: .dietaryEnergyConsumed),
+              let protein = HKObjectType.quantityType(forIdentifier: .dietaryProtein),
+              let carbs = HKObjectType.quantityType(forIdentifier: .dietaryCarbohydrates),
+              let fat = HKObjectType.quantityType(forIdentifier: .dietaryFatTotal)
         else { return nil }
         
-        return [weight]
+        return [weight, dietaryEnergy, protein, carbs, fat]
     }
     
     // MARK: - Public Fetch
     func fetchInitialData() async throws -> HealthSnapshot {
+        
+        print("🔍 Starting HealthKit data fetch...")
         
         async let age = fetchAge()
         async let sex = fetchBiologicalSex()
@@ -77,13 +88,17 @@ final class HealthKitManager {
         async let weight = fetchMostRecent(.bodyMass)
         async let steps = fetchTodayStepCount()
         
-        return try await HealthSnapshot(
+        let snapshot = try await HealthSnapshot(
             age: age,
             biologicalSex: sex,
             height: height,
             weight: weight,
             stepsToday: steps
         )
+        
+        print("✅ HealthKit fetch complete - Age: \(snapshot.age), Sex: \(snapshot.biologicalSex.rawValue), Height: \(snapshot.height)m, Weight: \(snapshot.weight)kg, Steps: \(snapshot.stepsToday)")
+        
+        return snapshot
     }
 }
 
@@ -92,22 +107,31 @@ private extension HealthKitManager {
     
     // Proper age calculation
     func fetchAge() throws -> Int {
+        print("🔍 Fetching age...")
         let components = try healthStore.dateOfBirthComponents()
         guard let birthDate = Calendar.current.date(from: components) else {
+            print("❌ Could not parse birth date components")
             throw HealthKitError.noData
         }
         
         let age = Calendar.current.dateComponents([.year], from: birthDate, to: Date()).year ?? 0
+        print("✅ Age calculated: \(age)")
         return age
     }
     
     func fetchBiologicalSex() throws -> HKBiologicalSex {
-        return try healthStore.biologicalSex().biologicalSex
+        print("🔍 Fetching biological sex...")
+        let sex = try healthStore.biologicalSex().biologicalSex
+        print("✅ Biological sex: \(sex.rawValue)")
+        return sex
     }
     
     func fetchMostRecent(_ identifier: HKQuantityTypeIdentifier) async throws -> Double {
         
+        print("🔍 Fetching \(identifier.rawValue)...")
+        
         guard let sampleType = HKSampleType.quantityType(forIdentifier: identifier) else {
+            print("❌ Could not create sample type for \(identifier.rawValue)")
             throw HealthKitError.typeUnavailable
         }
         
@@ -123,11 +147,13 @@ private extension HealthKitManager {
             ) { _, samples, error in
                 
                 if let error = error {
+                    print("❌ Error fetching \(identifier.rawValue): \(error)")
                     continuation.resume(throwing: error)
                     return
                 }
                 
                 guard let sample = samples?.first as? HKQuantitySample else {
+                    print("⚠️ No \(identifier.rawValue) data found")
                     continuation.resume(throwing: HealthKitError.noData)
                     return
                 }
@@ -135,6 +161,7 @@ private extension HealthKitManager {
                 let unit = self.unit(for: identifier)
                 let value = sample.quantity.doubleValue(for: unit)
                 
+                print("✅ \(identifier.rawValue): \(value) \(unit.unitString)")
                 continuation.resume(returning: value)
             }
             

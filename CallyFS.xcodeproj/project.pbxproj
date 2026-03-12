@@ -13,6 +13,13 @@
 		754C53D52F2F3B6700672CCB /* OnboardingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C53D42F2F3B6700672CCB /* OnboardingModel.swift */; };
 		754C53D82F2F3C9500672CCB /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C53D72F2F3C9500672CCB /* AuthenticationView.swift */; };
 		754C53DA2F2F3CA800672CCB /* AuthenticationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C53D92F2F3CA800672CCB /* AuthenticationVM.swift */; };
+		757583362F4CCFF1009F032A /* Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757583352F4CCFF1009F032A /* Shared.swift */; };
+		757583382F4CDB37009F032A /* HomeVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757583372F4CDB37009F032A /* HomeVM.swift */; };
+		759163042F5AA29B007205A5 /* Property List.plist in Resources */ = {isa = PBXBuildFile; fileRef = 759163032F5AA29B007205A5 /* Property List.plist */; };
+		759163082F5AB230007205A5 /* PersonalizedPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759163072F5AB230007205A5 /* PersonalizedPlan.swift */; };
+		75A7708D2F4E14E00034B1FB /* HomeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A7708C2F4E14E00034B1FB /* HomeModel.swift */; };
+		75B91FF92F504E61002FB651 /* SummaryVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B91FF82F504E61002FB651 /* SummaryVM.swift */; };
+		75B91FFB2F504E6C002FB651 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B91FFA2F504E6C002FB651 /* SummaryView.swift */; };
 		75BA09932F2DCE990056AE44 /* CallyFSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BA09922F2DCE990056AE44 /* CallyFSApp.swift */; };
 		75BA09952F2DCE990056AE44 /* OnBoardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BA09942F2DCE990056AE44 /* OnBoardingView.swift */; };
 		75BA09972F2DCE990056AE44 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BA09962F2DCE990056AE44 /* Item.swift */; };
@@ -20,6 +27,10 @@
 		75BA099C2F2DCE9D0056AE44 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75BA099B2F2DCE9D0056AE44 /* Preview Assets.xcassets */; };
 		75BA09A42F2DFB680056AE44 /* OnboardingVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BA09A32F2DFB680056AE44 /* OnboardingVM.swift */; };
 		75BA09A62F2DFBB00056AE44 /* OnboardingViewsOld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BA09A52F2DFBB00056AE44 /* OnboardingViewsOld.swift */; };
+		75D48ACA2F5769F300FE2D65 /* OpenRouterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D48AC92F5769F200FE2D65 /* OpenRouterService.swift */; };
+		75D48ACC2F581CCC00FE2D65 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D48ACB2F581CCC00FE2D65 /* HapticManager.swift */; };
+		75FD137D2F59B1690024F34C /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75FD137C2F59B1690024F34C /* Launch Screen.storyboard */; };
+		75FD137F2F5A1D4B0024F34C /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75FD137E2F5A1D4A0024F34C /* KeychainManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +41,13 @@
 		754C53D42F2F3B6700672CCB /* OnboardingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingModel.swift; sourceTree = "<group>"; };
 		754C53D72F2F3C9500672CCB /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 		754C53D92F2F3CA800672CCB /* AuthenticationVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationVM.swift; sourceTree = "<group>"; };
+		757583352F4CCFF1009F032A /* Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared.swift; sourceTree = "<group>"; };
+		757583372F4CDB37009F032A /* HomeVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVM.swift; sourceTree = "<group>"; };
+		759163032F5AA29B007205A5 /* Property List.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Property List.plist"; sourceTree = "<group>"; };
+		759163072F5AB230007205A5 /* PersonalizedPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizedPlan.swift; sourceTree = "<group>"; };
+		75A7708C2F4E14E00034B1FB /* HomeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeModel.swift; sourceTree = "<group>"; };
+		75B91FF82F504E61002FB651 /* SummaryVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryVM.swift; sourceTree = "<group>"; };
+		75B91FFA2F504E6C002FB651 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
 		75BA098F2F2DCE990056AE44 /* CallyFS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CallyFS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		75BA09922F2DCE990056AE44 /* CallyFSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallyFSApp.swift; sourceTree = "<group>"; };
 		75BA09942F2DCE990056AE44 /* OnBoardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingView.swift; sourceTree = "<group>"; };
@@ -38,6 +56,10 @@
 		75BA099B2F2DCE9D0056AE44 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		75BA09A32F2DFB680056AE44 /* OnboardingVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingVM.swift; sourceTree = "<group>"; };
 		75BA09A52F2DFBB00056AE44 /* OnboardingViewsOld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewsOld.swift; sourceTree = "<group>"; };
+		75D48AC92F5769F200FE2D65 /* OpenRouterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenRouterService.swift; sourceTree = "<group>"; };
+		75D48ACB2F581CCC00FE2D65 /* HapticManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HapticManager.swift; path = Utils/HapticManager.swift; sourceTree = "<group>"; };
+		75FD137C2F59B1690024F34C /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		75FD137E2F5A1D4A0024F34C /* KeychainManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +77,10 @@
 			isa = PBXGroup;
 			children = (
 				753D2BA82F45961A00DE5949 /*  Home.swift */,
+				75FD137C2F59B1690024F34C /* Launch Screen.storyboard */,
+				757583372F4CDB37009F032A /* HomeVM.swift */,
+				75A7708C2F4E14E00034B1FB /* HomeModel.swift */,
+				75B91FF62F504E2A002FB651 /* Summary */,
 			);
 			path = MainViews;
 			sourceTree = "<group>";
@@ -67,6 +93,15 @@
 				7537463B2F3BA1FE00A248AB /* UserModel.swift */,
 			);
 			path = Authentcation;
+			sourceTree = "<group>";
+		};
+		75B91FF62F504E2A002FB651 /* Summary */ = {
+			isa = PBXGroup;
+			children = (
+				75B91FF82F504E61002FB651 /* SummaryVM.swift */,
+				75B91FFA2F504E6C002FB651 /* SummaryView.swift */,
+			);
+			path = Summary;
 			sourceTree = "<group>";
 		};
 		75BA09862F2DCE990056AE44 = {
@@ -89,7 +124,13 @@
 			isa = PBXGroup;
 			children = (
 				753746382F3B174D00A248AB /* CallyFS.entitlements */,
+				75FD137E2F5A1D4A0024F34C /* KeychainManager.swift */,
+				759163072F5AB230007205A5 /* PersonalizedPlan.swift */,
+				759163032F5AA29B007205A5 /* Property List.plist */,
 				75BA09922F2DCE990056AE44 /* CallyFSApp.swift */,
+				757583352F4CCFF1009F032A /* Shared.swift */,
+				75D48ACB2F581CCC00FE2D65 /* HapticManager.swift */,
+				75D48AC92F5769F200FE2D65 /* OpenRouterService.swift */,
 				753D2BA72F458E7300DE5949 /* MainViews */,
 				754C53D62F2F3C7D00672CCB /* Authentcation */,
 				75BA09A22F2DFB2E0056AE44 /* Onboarding */,
@@ -180,7 +221,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75FD137D2F59B1690024F34C /* Launch Screen.storyboard in Resources */,
 				75BA099C2F2DCE9D0056AE44 /* Preview Assets.xcassets in Resources */,
+				759163042F5AA29B007205A5 /* Property List.plist in Resources */,
 				75BA09992F2DCE9D0056AE44 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -194,14 +237,23 @@
 			files = (
 				75BA09952F2DCE990056AE44 /* OnBoardingView.swift in Sources */,
 				75BA09A62F2DFBB00056AE44 /* OnboardingViewsOld.swift in Sources */,
+				75B91FFB2F504E6C002FB651 /* SummaryView.swift in Sources */,
 				754C53D52F2F3B6700672CCB /* OnboardingModel.swift in Sources */,
+				75FD137F2F5A1D4B0024F34C /* KeychainManager.swift in Sources */,
+				757583382F4CDB37009F032A /* HomeVM.swift in Sources */,
+				75B91FF92F504E61002FB651 /* SummaryVM.swift in Sources */,
 				754C53D82F2F3C9500672CCB /* AuthenticationView.swift in Sources */,
 				754C53DA2F2F3CA800672CCB /* AuthenticationVM.swift in Sources */,
 				75BA09972F2DCE990056AE44 /* Item.swift in Sources */,
+				757583362F4CCFF1009F032A /* Shared.swift in Sources */,
 				75BA09932F2DCE990056AE44 /* CallyFSApp.swift in Sources */,
+				759163082F5AB230007205A5 /* PersonalizedPlan.swift in Sources */,
 				7537463A2F3B17FC00A248AB /* HealthKitManager.swift in Sources */,
+				75A7708D2F4E14E00034B1FB /* HomeModel.swift in Sources */,
+				75D48ACA2F5769F300FE2D65 /* OpenRouterService.swift in Sources */,
 				75BA09A42F2DFB680056AE44 /* OnboardingVM.swift in Sources */,
 				753D2BA92F45961A00DE5949 /*  Home.swift in Sources */,
+				75D48ACC2F581CCC00FE2D65 /* HapticManager.swift in Sources */,
 				7537463C2F3BA1FE00A248AB /* UserModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
