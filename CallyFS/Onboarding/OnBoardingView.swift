@@ -692,21 +692,6 @@ struct DarkPermissionRow: View {
     }
 }
 
-struct SummaryPill: View {
-    let label: String
-    let value: String
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(label).font(.system(size: 10, weight: .medium)).foregroundColor(Color(hex: "#666666")).tracking(1.5)
-            Text(value).font(.system(size: 14, weight: .semibold)).foregroundColor(.white).lineLimit(1)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 16).padding(.vertical, 14)
-        .background(Color(hex: "#161616")).cornerRadius(12)
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: "#2A2A2A"), lineWidth: 1))
-    }
-}
-
 // MARK: - Preview
 
 #Preview {

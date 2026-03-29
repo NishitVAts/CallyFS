@@ -7,58 +7,80 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7537463A2F3B17FC00A248AB /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753746392F3B17FC00A248AB /* HealthKitManager.swift */; };
-		7537463C2F3BA1FE00A248AB /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7537463B2F3BA1FE00A248AB /* UserModel.swift */; };
-		753D2BA92F45961A00DE5949 /*  Home.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753D2BA82F45961A00DE5949 /*  Home.swift */; };
-		754C53D52F2F3B6700672CCB /* OnboardingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C53D42F2F3B6700672CCB /* OnboardingModel.swift */; };
-		754C53D82F2F3C9500672CCB /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C53D72F2F3C9500672CCB /* AuthenticationView.swift */; };
-		754C53DA2F2F3CA800672CCB /* AuthenticationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C53D92F2F3CA800672CCB /* AuthenticationVM.swift */; };
+		751424962F753B3C009D78ED /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 751424952F753B3C009D78ED /* CustomTabBar.swift */; };
 		757583362F4CCFF1009F032A /* Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757583352F4CCFF1009F032A /* Shared.swift */; };
-		757583382F4CDB37009F032A /* HomeVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757583372F4CDB37009F032A /* HomeVM.swift */; };
 		759163042F5AA29B007205A5 /* Property List.plist in Resources */ = {isa = PBXBuildFile; fileRef = 759163032F5AA29B007205A5 /* Property List.plist */; };
 		759163082F5AB230007205A5 /* PersonalizedPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759163072F5AB230007205A5 /* PersonalizedPlan.swift */; };
-		75A7708D2F4E14E00034B1FB /* HomeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A7708C2F4E14E00034B1FB /* HomeModel.swift */; };
-		75B91FF92F504E61002FB651 /* SummaryVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B91FF82F504E61002FB651 /* SummaryVM.swift */; };
-		75B91FFB2F504E6C002FB651 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B91FFA2F504E6C002FB651 /* SummaryView.swift */; };
 		75BA09932F2DCE990056AE44 /* CallyFSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BA09922F2DCE990056AE44 /* CallyFSApp.swift */; };
-		75BA09952F2DCE990056AE44 /* OnBoardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BA09942F2DCE990056AE44 /* OnBoardingView.swift */; };
-		75BA09972F2DCE990056AE44 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BA09962F2DCE990056AE44 /* Item.swift */; };
 		75BA09992F2DCE9D0056AE44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75BA09982F2DCE9D0056AE44 /* Assets.xcassets */; };
 		75BA099C2F2DCE9D0056AE44 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75BA099B2F2DCE9D0056AE44 /* Preview Assets.xcassets */; };
-		75BA09A42F2DFB680056AE44 /* OnboardingVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BA09A32F2DFB680056AE44 /* OnboardingVM.swift */; };
-		75BA09A62F2DFBB00056AE44 /* OnboardingViewsOld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BA09A52F2DFBB00056AE44 /* OnboardingViewsOld.swift */; };
-		75D48ACA2F5769F300FE2D65 /* OpenRouterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D48AC92F5769F200FE2D65 /* OpenRouterService.swift */; };
-		75D48ACC2F581CCC00FE2D65 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D48ACB2F581CCC00FE2D65 /* HapticManager.swift */; };
-		75FD137D2F59B1690024F34C /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75FD137C2F59B1690024F34C /* Launch Screen.storyboard */; };
+		75D1A5082F72B81C00FF58CA /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D1A5072F72B81C00FF58CA /* NavigationRouter.swift */; };
+		75E60A3A2F62D54C009EBFD7 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75E60A122F62D54B009EBFD7 /* Launch Screen.storyboard */; };
+		75E60A3B2F62D54C009EBFD7 /* SummaryVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A142F62D54B009EBFD7 /* SummaryVM.swift */; };
+		75E60A3C2F62D54C009EBFD7 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A152F62D54B009EBFD7 /* SummaryView.swift */; };
+		75E60A3D2F62D54C009EBFD7 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A182F62D54C009EBFD7 /* AppTheme.swift */; };
+		75E60A3E2F62D54C009EBFD7 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A1A2F62D54C009EBFD7 /* DataManager.swift */; };
+		75E60A3F2F62D54C009EBFD7 /* MealLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A1C2F62D54C009EBFD7 /* MealLog.swift */; };
+		75E60A402F62D54C009EBFD7 /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A1E2F62D54C009EBFD7 /* AIService.swift */; };
+		75E60A412F62D54C009EBFD7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A202F62D54C009EBFD7 /* SettingsView.swift */; };
+		75E60A422F62D54C009EBFD7 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A232F62D54C009EBFD7 /* DashboardView.swift */; };
+		75E60A432F62D54C009EBFD7 /* MealDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A242F62D54C009EBFD7 /* MealDetailView.swift */; };
+		75E60A442F62D54C009EBFD7 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A262F62D54C009EBFD7 /* ProfileView.swift */; };
+		75E60A452F62D54C009EBFD7 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A282F62D54C009EBFD7 /* HistoryView.swift */; };
+		75E60A462F62D54C009EBFD7 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A2A2F62D54C009EBFD7 /* MainTabView.swift */; };
+		75E60A472F62D54C009EBFD7 /* QuickAddMealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A2B2F62D54C009EBFD7 /* QuickAddMealView.swift */; };
+		75E60A482F62D54C009EBFD7 /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A2D2F62D54C009EBFD7 /* AnalyticsView.swift */; };
+		75E60A492F62D54C009EBFD7 /* MealPlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A2F2F62D54C009EBFD7 /* MealPlansView.swift */; };
+		75E60A4A2F62D54C009EBFD7 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A312F62D54C009EBFD7 /* HapticManager.swift */; };
+		75E60A4B2F62D54C009EBFD7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75E60A332F62D54C009EBFD7 /* Preview Assets.xcassets */; };
+		75E60A4C2F62D54C009EBFD7 /* OnboardingVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A352F62D54C009EBFD7 /* OnboardingVM.swift */; };
+		75E60A4D2F62D54C009EBFD7 /* OnboardingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A362F62D54C009EBFD7 /* OnboardingModel.swift */; };
+		75E60A4E2F62D54C009EBFD7 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A372F62D54C009EBFD7 /* HealthKitManager.swift */; };
+		75E60A4F2F62D54C009EBFD7 /* OnBoardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A382F62D54C009EBFD7 /* OnBoardingView.swift */; };
+		75E60A542F62D57E009EBFD7 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A502F62D57E009EBFD7 /* KeychainManager.swift */; };
+		75E60A552F62D57E009EBFD7 /* Property List.plist in Resources */ = {isa = PBXBuildFile; fileRef = 75E60A512F62D57E009EBFD7 /* Property List.plist */; };
+		75E60A562F62D57E009EBFD7 /* PersonalizedPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A522F62D57E009EBFD7 /* PersonalizedPlan.swift */; };
+		75E60A572F62D57E009EBFD7 /* Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E60A532F62D57E009EBFD7 /* Shared.swift */; };
 		75FD137F2F5A1D4B0024F34C /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75FD137E2F5A1D4A0024F34C /* KeychainManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		751424952F753B3C009D78ED /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 		753746382F3B174D00A248AB /* CallyFS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CallyFS.entitlements; sourceTree = "<group>"; };
-		753746392F3B17FC00A248AB /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
-		7537463B2F3BA1FE00A248AB /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
-		753D2BA82F45961A00DE5949 /*  Home.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " Home.swift"; sourceTree = "<group>"; };
-		754C53D42F2F3B6700672CCB /* OnboardingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingModel.swift; sourceTree = "<group>"; };
-		754C53D72F2F3C9500672CCB /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
-		754C53D92F2F3CA800672CCB /* AuthenticationVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationVM.swift; sourceTree = "<group>"; };
 		757583352F4CCFF1009F032A /* Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared.swift; sourceTree = "<group>"; };
-		757583372F4CDB37009F032A /* HomeVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVM.swift; sourceTree = "<group>"; };
 		759163032F5AA29B007205A5 /* Property List.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Property List.plist"; sourceTree = "<group>"; };
 		759163072F5AB230007205A5 /* PersonalizedPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizedPlan.swift; sourceTree = "<group>"; };
-		75A7708C2F4E14E00034B1FB /* HomeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeModel.swift; sourceTree = "<group>"; };
-		75B91FF82F504E61002FB651 /* SummaryVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryVM.swift; sourceTree = "<group>"; };
-		75B91FFA2F504E6C002FB651 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
 		75BA098F2F2DCE990056AE44 /* CallyFS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CallyFS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		75BA09922F2DCE990056AE44 /* CallyFSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallyFSApp.swift; sourceTree = "<group>"; };
-		75BA09942F2DCE990056AE44 /* OnBoardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingView.swift; sourceTree = "<group>"; };
-		75BA09962F2DCE990056AE44 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		75BA09982F2DCE9D0056AE44 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		75BA099B2F2DCE9D0056AE44 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		75BA09A32F2DFB680056AE44 /* OnboardingVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingVM.swift; sourceTree = "<group>"; };
-		75BA09A52F2DFBB00056AE44 /* OnboardingViewsOld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewsOld.swift; sourceTree = "<group>"; };
-		75D48AC92F5769F200FE2D65 /* OpenRouterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenRouterService.swift; sourceTree = "<group>"; };
-		75D48ACB2F581CCC00FE2D65 /* HapticManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HapticManager.swift; path = Utils/HapticManager.swift; sourceTree = "<group>"; };
-		75FD137C2F59B1690024F34C /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		75D1A5072F72B81C00FF58CA /* NavigationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouter.swift; sourceTree = "<group>"; };
+		75E60A122F62D54B009EBFD7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		75E60A142F62D54B009EBFD7 /* SummaryVM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SummaryVM.swift; sourceTree = "<group>"; };
+		75E60A152F62D54B009EBFD7 /* SummaryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
+		75E60A182F62D54C009EBFD7 /* AppTheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		75E60A1A2F62D54C009EBFD7 /* DataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		75E60A1C2F62D54C009EBFD7 /* MealLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MealLog.swift; sourceTree = "<group>"; };
+		75E60A1E2F62D54C009EBFD7 /* AIService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
+		75E60A202F62D54C009EBFD7 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		75E60A232F62D54C009EBFD7 /* DashboardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		75E60A242F62D54C009EBFD7 /* MealDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MealDetailView.swift; sourceTree = "<group>"; };
+		75E60A262F62D54C009EBFD7 /* ProfileView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		75E60A282F62D54C009EBFD7 /* HistoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		75E60A2A2F62D54C009EBFD7 /* MainTabView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		75E60A2B2F62D54C009EBFD7 /* QuickAddMealView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuickAddMealView.swift; sourceTree = "<group>"; };
+		75E60A2D2F62D54C009EBFD7 /* AnalyticsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
+		75E60A2F2F62D54C009EBFD7 /* MealPlansView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MealPlansView.swift; sourceTree = "<group>"; };
+		75E60A312F62D54C009EBFD7 /* HapticManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		75E60A332F62D54C009EBFD7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		75E60A352F62D54C009EBFD7 /* OnboardingVM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingVM.swift; sourceTree = "<group>"; };
+		75E60A362F62D54C009EBFD7 /* OnboardingModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingModel.swift; sourceTree = "<group>"; };
+		75E60A372F62D54C009EBFD7 /* HealthKitManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
+		75E60A382F62D54C009EBFD7 /* OnBoardingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnBoardingView.swift; sourceTree = "<group>"; };
+		75E60A502F62D57E009EBFD7 /* KeychainManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = KeychainManager.swift; path = CallyFS/KeychainManager.swift; sourceTree = "<group>"; };
+		75E60A512F62D57E009EBFD7 /* Property List.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Property List.plist"; path = "CallyFS/Property List.plist"; sourceTree = "<group>"; };
+		75E60A522F62D57E009EBFD7 /* PersonalizedPlan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PersonalizedPlan.swift; path = CallyFS/PersonalizedPlan.swift; sourceTree = "<group>"; };
+		75E60A532F62D57E009EBFD7 /* Shared.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Shared.swift; path = CallyFS/Shared.swift; sourceTree = "<group>"; };
 		75FD137E2F5A1D4A0024F34C /* KeychainManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -73,40 +95,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		753D2BA72F458E7300DE5949 /* MainViews */ = {
-			isa = PBXGroup;
-			children = (
-				753D2BA82F45961A00DE5949 /*  Home.swift */,
-				75FD137C2F59B1690024F34C /* Launch Screen.storyboard */,
-				757583372F4CDB37009F032A /* HomeVM.swift */,
-				75A7708C2F4E14E00034B1FB /* HomeModel.swift */,
-				75B91FF62F504E2A002FB651 /* Summary */,
-			);
-			path = MainViews;
-			sourceTree = "<group>";
-		};
-		754C53D62F2F3C7D00672CCB /* Authentcation */ = {
-			isa = PBXGroup;
-			children = (
-				754C53D72F2F3C9500672CCB /* AuthenticationView.swift */,
-				754C53D92F2F3CA800672CCB /* AuthenticationVM.swift */,
-				7537463B2F3BA1FE00A248AB /* UserModel.swift */,
-			);
-			path = Authentcation;
-			sourceTree = "<group>";
-		};
-		75B91FF62F504E2A002FB651 /* Summary */ = {
-			isa = PBXGroup;
-			children = (
-				75B91FF82F504E61002FB651 /* SummaryVM.swift */,
-				75B91FFA2F504E6C002FB651 /* SummaryView.swift */,
-			);
-			path = Summary;
-			sourceTree = "<group>";
-		};
 		75BA09862F2DCE990056AE44 = {
 			isa = PBXGroup;
 			children = (
+				75E60A502F62D57E009EBFD7 /* KeychainManager.swift */,
+				75E60A522F62D57E009EBFD7 /* PersonalizedPlan.swift */,
+				75E60A512F62D57E009EBFD7 /* Property List.plist */,
+				75E60A532F62D57E009EBFD7 /* Shared.swift */,
 				75BA09912F2DCE990056AE44 /* CallyFS */,
 				75BA09902F2DCE990056AE44 /* Products */,
 			);
@@ -123,18 +118,18 @@
 		75BA09912F2DCE990056AE44 /* CallyFS */ = {
 			isa = PBXGroup;
 			children = (
+				75E60A162F62D54C009EBFD7 /* Core */,
+				75E60A0F2F62D54B009EBFD7 /* MainViews */,
+				75E60A342F62D54C009EBFD7 /* Onboarding */,
+				75E60A322F62D54C009EBFD7 /* Preview Content */,
+				75E60A1F2F62D54C009EBFD7 /* Settings */,
+				75E60A302F62D54C009EBFD7 /* Utils */,
 				753746382F3B174D00A248AB /* CallyFS.entitlements */,
 				75FD137E2F5A1D4A0024F34C /* KeychainManager.swift */,
 				759163072F5AB230007205A5 /* PersonalizedPlan.swift */,
 				759163032F5AA29B007205A5 /* Property List.plist */,
 				75BA09922F2DCE990056AE44 /* CallyFSApp.swift */,
 				757583352F4CCFF1009F032A /* Shared.swift */,
-				75D48ACB2F581CCC00FE2D65 /* HapticManager.swift */,
-				75D48AC92F5769F200FE2D65 /* OpenRouterService.swift */,
-				753D2BA72F458E7300DE5949 /* MainViews */,
-				754C53D62F2F3C7D00672CCB /* Authentcation */,
-				75BA09A22F2DFB2E0056AE44 /* Onboarding */,
-				75BA09962F2DCE990056AE44 /* Item.swift */,
 				75BA09982F2DCE9D0056AE44 /* Assets.xcassets */,
 				75BA099A2F2DCE9D0056AE44 /* Preview Content */,
 			);
@@ -149,14 +144,164 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		75BA09A22F2DFB2E0056AE44 /* Onboarding */ = {
+		75D1A5062F72B7FD00FF58CA /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
-				75BA09A32F2DFB680056AE44 /* OnboardingVM.swift */,
-				754C53D42F2F3B6700672CCB /* OnboardingModel.swift */,
-				75BA09942F2DCE990056AE44 /* OnBoardingView.swift */,
-				753746392F3B17FC00A248AB /* HealthKitManager.swift */,
-				75BA09A52F2DFBB00056AE44 /* OnboardingViewsOld.swift */,
+				75D1A5072F72B81C00FF58CA /* NavigationRouter.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		75E60A0F2F62D54B009EBFD7 /* MainViews */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A2E2F62D54C009EBFD7 /* MealPlans */,
+				75E60A2C2F62D54C009EBFD7 /* Analytics */,
+				75E60A272F62D54C009EBFD7 /* History */,
+				75E60A252F62D54C009EBFD7 /* Profile */,
+				75E60A222F62D54C009EBFD7 /* Dashboard */,
+				75E60A292F62D54C009EBFD7 /* Main */,
+				75E60A122F62D54B009EBFD7 /* Launch Screen.storyboard */,
+				75E60A132F62D54B009EBFD7 /* Summary */,
+			);
+			path = MainViews;
+			sourceTree = "<group>";
+		};
+		75E60A132F62D54B009EBFD7 /* Summary */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A142F62D54B009EBFD7 /* SummaryVM.swift */,
+				75E60A152F62D54B009EBFD7 /* SummaryView.swift */,
+			);
+			path = Summary;
+			sourceTree = "<group>";
+		};
+		75E60A162F62D54C009EBFD7 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				75D1A5062F72B7FD00FF58CA /* Navigation */,
+				75E60A172F62D54C009EBFD7 /* DesignSystem */,
+				75E60A192F62D54C009EBFD7 /* Data */,
+				75E60A1D2F62D54C009EBFD7 /* Services */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		75E60A172F62D54C009EBFD7 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A182F62D54C009EBFD7 /* AppTheme.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		75E60A192F62D54C009EBFD7 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A1A2F62D54C009EBFD7 /* DataManager.swift */,
+				75E60A1B2F62D54C009EBFD7 /* Models */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		75E60A1B2F62D54C009EBFD7 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A1C2F62D54C009EBFD7 /* MealLog.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		75E60A1D2F62D54C009EBFD7 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A1E2F62D54C009EBFD7 /* AIService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		75E60A1F2F62D54C009EBFD7 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A202F62D54C009EBFD7 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		75E60A222F62D54C009EBFD7 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A232F62D54C009EBFD7 /* DashboardView.swift */,
+				75E60A242F62D54C009EBFD7 /* MealDetailView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		75E60A252F62D54C009EBFD7 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A262F62D54C009EBFD7 /* ProfileView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		75E60A272F62D54C009EBFD7 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A282F62D54C009EBFD7 /* HistoryView.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		75E60A292F62D54C009EBFD7 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A2A2F62D54C009EBFD7 /* MainTabView.swift */,
+				75E60A2B2F62D54C009EBFD7 /* QuickAddMealView.swift */,
+				751424952F753B3C009D78ED /* CustomTabBar.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		75E60A2C2F62D54C009EBFD7 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A2D2F62D54C009EBFD7 /* AnalyticsView.swift */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		75E60A2E2F62D54C009EBFD7 /* MealPlans */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A2F2F62D54C009EBFD7 /* MealPlansView.swift */,
+			);
+			path = MealPlans;
+			sourceTree = "<group>";
+		};
+		75E60A302F62D54C009EBFD7 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A312F62D54C009EBFD7 /* HapticManager.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		75E60A322F62D54C009EBFD7 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A332F62D54C009EBFD7 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		75E60A342F62D54C009EBFD7 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				75E60A352F62D54C009EBFD7 /* OnboardingVM.swift */,
+				75E60A362F62D54C009EBFD7 /* OnboardingModel.swift */,
+				75E60A372F62D54C009EBFD7 /* HealthKitManager.swift */,
+				75E60A382F62D54C009EBFD7 /* OnBoardingView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -221,9 +366,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				75FD137D2F59B1690024F34C /* Launch Screen.storyboard in Resources */,
+				75E60A552F62D57E009EBFD7 /* Property List.plist in Resources */,
 				75BA099C2F2DCE9D0056AE44 /* Preview Assets.xcassets in Resources */,
 				759163042F5AA29B007205A5 /* Property List.plist in Resources */,
+				75E60A4B2F62D54C009EBFD7 /* Preview Assets.xcassets in Resources */,
+				75E60A3A2F62D54C009EBFD7 /* Launch Screen.storyboard in Resources */,
 				75BA09992F2DCE9D0056AE44 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -235,26 +382,35 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				75BA09952F2DCE990056AE44 /* OnBoardingView.swift in Sources */,
-				75BA09A62F2DFBB00056AE44 /* OnboardingViewsOld.swift in Sources */,
-				75B91FFB2F504E6C002FB651 /* SummaryView.swift in Sources */,
-				754C53D52F2F3B6700672CCB /* OnboardingModel.swift in Sources */,
+				75E60A402F62D54C009EBFD7 /* AIService.swift in Sources */,
 				75FD137F2F5A1D4B0024F34C /* KeychainManager.swift in Sources */,
-				757583382F4CDB37009F032A /* HomeVM.swift in Sources */,
-				75B91FF92F504E61002FB651 /* SummaryVM.swift in Sources */,
-				754C53D82F2F3C9500672CCB /* AuthenticationView.swift in Sources */,
-				754C53DA2F2F3CA800672CCB /* AuthenticationVM.swift in Sources */,
-				75BA09972F2DCE990056AE44 /* Item.swift in Sources */,
+				75E60A4E2F62D54C009EBFD7 /* HealthKitManager.swift in Sources */,
+				75E60A4F2F62D54C009EBFD7 /* OnBoardingView.swift in Sources */,
+				75E60A492F62D54C009EBFD7 /* MealPlansView.swift in Sources */,
+				75E60A3C2F62D54C009EBFD7 /* SummaryView.swift in Sources */,
+				75E60A3B2F62D54C009EBFD7 /* SummaryVM.swift in Sources */,
+				75E60A432F62D54C009EBFD7 /* MealDetailView.swift in Sources */,
 				757583362F4CCFF1009F032A /* Shared.swift in Sources */,
+				75E60A442F62D54C009EBFD7 /* ProfileView.swift in Sources */,
+				75E60A562F62D57E009EBFD7 /* PersonalizedPlan.swift in Sources */,
+				75E60A3D2F62D54C009EBFD7 /* AppTheme.swift in Sources */,
+				75E60A472F62D54C009EBFD7 /* QuickAddMealView.swift in Sources */,
+				75E60A572F62D57E009EBFD7 /* Shared.swift in Sources */,
+				75E60A542F62D57E009EBFD7 /* KeychainManager.swift in Sources */,
+				75E60A462F62D54C009EBFD7 /* MainTabView.swift in Sources */,
+				75E60A4D2F62D54C009EBFD7 /* OnboardingModel.swift in Sources */,
+				75E60A452F62D54C009EBFD7 /* HistoryView.swift in Sources */,
 				75BA09932F2DCE990056AE44 /* CallyFSApp.swift in Sources */,
+				75E60A3F2F62D54C009EBFD7 /* MealLog.swift in Sources */,
+				75E60A412F62D54C009EBFD7 /* SettingsView.swift in Sources */,
+				75E60A4A2F62D54C009EBFD7 /* HapticManager.swift in Sources */,
+				75D1A5082F72B81C00FF58CA /* NavigationRouter.swift in Sources */,
+				75E60A3E2F62D54C009EBFD7 /* DataManager.swift in Sources */,
+				75E60A482F62D54C009EBFD7 /* AnalyticsView.swift in Sources */,
+				75E60A422F62D54C009EBFD7 /* DashboardView.swift in Sources */,
 				759163082F5AB230007205A5 /* PersonalizedPlan.swift in Sources */,
-				7537463A2F3B17FC00A248AB /* HealthKitManager.swift in Sources */,
-				75A7708D2F4E14E00034B1FB /* HomeModel.swift in Sources */,
-				75D48ACA2F5769F300FE2D65 /* OpenRouterService.swift in Sources */,
-				75BA09A42F2DFB680056AE44 /* OnboardingVM.swift in Sources */,
-				753D2BA92F45961A00DE5949 /*  Home.swift in Sources */,
-				75D48ACC2F581CCC00FE2D65 /* HapticManager.swift in Sources */,
-				7537463C2F3BA1FE00A248AB /* UserModel.swift in Sources */,
+				75E60A4C2F62D54C009EBFD7 /* OnboardingVM.swift in Sources */,
+				751424962F753B3C009D78ED /* CustomTabBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
