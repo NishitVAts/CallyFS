@@ -32,9 +32,11 @@ enum AppTheme {
         static let error = Color(hex: "#FF6B6B")
         static let info = Color(hex: "#2196F3")
         
-        static let macroProtein = Color(hex: "#A0A0A0")
-        static let macroCarbs = Color(hex: "#E8E8E8")
-        static let macroFat = Color(hex: "#C8C8C8")
+        static let macroProtein = Color(hex: "#6C8EF5")  // indigo
+        static let macroCarbs = Color(hex: "#F2A65A")    // amber
+        static let macroFat = Color(hex: "#7FD1AE")      // mint
+
+        static let calorieOver = Color(hex: "#FF6B6B")   // over-budget warning
         
         static let gradientStart = Color(hex: "#E0E0E0")
         static let gradientEnd = Color(hex: "#909090")

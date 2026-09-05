@@ -6,14 +6,14 @@
 import Foundation
 import SwiftData
 
-@MainActor
-final class DataManager {
-    static let shared = DataManager()
-    
-    let container: ModelContainer
-    let context: ModelContext
-    
-    private init() {
+/// Single source of truth for the app's SwiftData stack.
+///
+/// Both `CallyFSApp` (the SwiftUI `.modelContainer` environment) and
+/// `DataManager` use this one container, so every `@Query`, every
+/// `@Environment(\.modelContext)`, and every `DataManager` call read and
+/// write the exact same persistent store.
+enum AppPersistence {
+    static let container: ModelContainer = {
         do {
             let schema = Schema([
                 MealLog.self,
@@ -22,13 +22,24 @@ final class DataManager {
                 DailyGoals.self,
                 MealPlan.self
             ])
-            
             let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-            container = try ModelContainer(for: schema, configurations: [config])
-            context = ModelContext(container)
+            return try ModelContainer(for: schema, configurations: [config])
         } catch {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
+    }()
+}
+
+@MainActor
+final class DataManager {
+    static let shared = DataManager()
+
+    let container: ModelContainer
+    let context: ModelContext
+
+    private init() {
+        container = AppPersistence.container
+        context = container.mainContext
     }
     
     // MARK: - Meal Logs

@@ -15,6 +15,7 @@ struct MealDetailView: View {
 
     let slotType: MealSlot.SlotType
     @State private var showAddPanel = false
+    @State private var editingMeal: MealLog?
 
     // MARK: - Derived data
 
@@ -63,6 +64,9 @@ struct MealDetailView: View {
             }
         }
         .navigationBarHidden(true)
+        .sheet(item: $editingMeal) { meal in
+            EditMealView(meal: meal)
+        }
     }
 
     // MARK: - Nav Bar
@@ -223,9 +227,14 @@ struct MealDetailView: View {
     private var mealsList: some View {
         VStack(spacing: 8) {
             ForEach(meals) { meal in
-                MealItemCard(meal: meal) {
-                    deleteMeal(meal)
-                }
+                MealItemCard(
+                    meal: meal,
+                    onEdit: {
+                        HapticManager.shared.light()
+                        editingMeal = meal
+                    },
+                    onDelete: { deleteMeal(meal) }
+                )
             }
         }
         .padding(.horizontal, AppTheme.Spacing.xl)
@@ -290,6 +299,7 @@ struct MealDetailView: View {
 
 struct MealItemCard: View {
     let meal: MealLog
+    let onEdit: () -> Void
     let onDelete: () -> Void
 
     var body: some View {
@@ -367,6 +377,16 @@ struct MealItemCard: View {
             RoundedRectangle(cornerRadius: 14)
                 .stroke(AppTheme.Colors.border, lineWidth: 1)
         )
+        .contentShape(RoundedRectangle(cornerRadius: 14))
+        .onTapGesture(perform: onEdit)
+        .contextMenu {
+            Button(action: onEdit) {
+                Label("Edit Meal", systemImage: "pencil")
+            }
+            Button(role: .destructive, action: onDelete) {
+                Label("Delete Meal", systemImage: "trash")
+            }
+        }
     }
 
     private func macroPill(value: Double, label: String, color: Color) -> some View {
@@ -386,6 +406,177 @@ struct MealItemCard: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(AppTheme.Colors.border, lineWidth: 1)
         )
+    }
+}
+
+// MARK: - EditMealView (correct AI estimates, move slots, adjust time)
+
+struct EditMealView: View {
+    @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) private var modelContext
+
+    let meal: MealLog
+
+    @State private var name: String
+    @State private var calories: Int
+    @State private var protein: Double
+    @State private var carbs: Double
+    @State private var fat: Double
+    @State private var slot: MealSlot.SlotType
+    @State private var timestamp: Date
+    @State private var errorMessage: String?
+
+    init(meal: MealLog) {
+        self.meal = meal
+        _name = State(initialValue: meal.name)
+        _calories = State(initialValue: meal.calories)
+        _protein = State(initialValue: meal.protein)
+        _carbs = State(initialValue: meal.carbs)
+        _fat = State(initialValue: meal.fat)
+        _slot = State(initialValue: MealSlot.SlotType(rawValue: meal.mealType) ?? .snacks)
+        _timestamp = State(initialValue: meal.timestamp)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                AppTheme.Colors.background.ignoresSafeArea()
+
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.xl) {
+
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                            SectionLabel(text: "Name")
+                            TextField("Meal name", text: $name)
+                                .font(AppTheme.Typography.body())
+                                .foregroundColor(AppTheme.Colors.textPrimary)
+                                .inputFieldChrome()
+                        }
+
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                            SectionLabel(text: "Nutrition")
+
+                            CalorieInputField(calories: $calories)
+
+                            HStack(spacing: AppTheme.Spacing.sm) {
+                                MacroInputField(label: "Protein", value: $protein, color: AppTheme.Colors.macroProtein)
+                                MacroInputField(label: "Carbs", value: $carbs, color: AppTheme.Colors.macroCarbs)
+                                MacroInputField(label: "Fat", value: $fat, color: AppTheme.Colors.macroFat)
+                            }
+                        }
+
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                            SectionLabel(text: "Meal type")
+                            Menu {
+                                ForEach(MealSlot.SlotType.allCases, id: \.self) { type in
+                                    Button {
+                                        HapticManager.shared.categorySelection()
+                                        slot = type
+                                    } label: {
+                                        HStack {
+                                            Text(type.emoji)
+                                            Text(type.rawValue)
+                                            if slot == type {
+                                                Spacer()
+                                                Image(systemName: "checkmark")
+                                            }
+                                        }
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    Text(slot.emoji).font(.system(size: 20))
+                                    Text(slot.rawValue)
+                                        .font(AppTheme.Typography.body(weight: .medium))
+                                        .foregroundColor(AppTheme.Colors.textPrimary)
+                                    Spacer()
+                                    Image(systemName: "chevron.down")
+                                        .font(AppTheme.Typography.footnote(weight: .semibold))
+                                        .foregroundColor(AppTheme.Colors.textQuaternary)
+                                }
+                                .inputFieldChrome()
+                            }
+                        }
+
+                        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                            SectionLabel(text: "Logged at")
+                            DatePicker("", selection: $timestamp, in: ...Date())
+                                .datePickerStyle(.compact)
+                                .labelsHidden()
+                                .colorScheme(.dark)
+                                .tint(AppTheme.Colors.accent)
+                        }
+
+                        if let error = errorMessage {
+                            HStack(spacing: AppTheme.Spacing.sm) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundColor(AppTheme.Colors.error)
+                                Text(error)
+                                    .font(AppTheme.Typography.caption1())
+                                    .foregroundColor(AppTheme.Colors.error)
+                            }
+                            .padding(AppTheme.Spacing.md)
+                            .background(AppTheme.Colors.error.opacity(0.1), in: RoundedRectangle(cornerRadius: AppTheme.CornerRadius.md))
+                        }
+
+                        Button(action: save) {
+                            Text("Save Changes")
+                                .font(AppTheme.Typography.body(weight: .semibold))
+                                .foregroundColor(canSave ? AppTheme.Colors.background : AppTheme.Colors.textQuaternary)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 56)
+                                .liquidGlass(
+                                    in: RoundedRectangle(cornerRadius: AppTheme.CornerRadius.xl),
+                                    tint: canSave ? AppTheme.Colors.accent : nil,
+                                    fallback: canSave ? AppTheme.Colors.accent : AppTheme.Colors.surfaceElevated
+                                )
+                        }
+                        .disabled(!canSave)
+                        .animation(AppTheme.Animation.easeInOut, value: canSave)
+                    }
+                    .padding(AppTheme.Spacing.xl)
+                }
+            }
+            .navigationTitle("Edit Meal")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") { dismiss() }
+                        .foregroundColor(AppTheme.Colors.textSecondary)
+                }
+            }
+        }
+    }
+
+    private var canSave: Bool {
+        !name.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
+    private func save() {
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return }
+
+        let slotChanged = meal.mealType != slot.rawValue
+
+        meal.name = trimmed
+        meal.calories = max(calories, 0)
+        meal.protein = max(protein, 0)
+        meal.carbs = max(carbs, 0)
+        meal.fat = max(fat, 0)
+        meal.mealType = slot.rawValue
+        if slotChanged { meal.emoji = slot.emoji }
+        meal.timestamp = timestamp
+        // The user has corrected the values, so they're no longer an AI estimate.
+        meal.isAIGenerated = false
+
+        do {
+            try modelContext.save()
+            HapticManager.shared.success()
+            dismiss()
+        } catch {
+            errorMessage = "Couldn't save your changes. Please try again."
+            HapticManager.shared.error()
+        }
     }
 }
 
@@ -441,6 +632,11 @@ struct AddMealPanel: View {
     @State private var errorMessage: String?
     @State private var dragOffset: CGFloat = 0
     @State private var isVisible = false
+    @State private var isManualMode = false
+    @State private var manualCalories = 0
+    @State private var manualProtein = 0.0
+    @State private var manualCarbs = 0.0
+    @State private var manualFat = 0.0
     @FocusState private var isNameFocused: Bool
 
     private let dismissThreshold: CGFloat = 80
@@ -515,15 +711,62 @@ struct AddMealPanel: View {
                     .padding(.horizontal, AppTheme.Spacing.xl)
                     .padding(.top, AppTheme.Spacing.xl)
 
+                // Manual entry toggle
+                Button {
+                    HapticManager.shared.selectionChanged()
+                    withAnimation(AppTheme.Animation.easeInOut) { isManualMode.toggle() }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: isManualMode ? "sparkles" : "keyboard")
+                            .font(.system(size: 11, weight: .semibold))
+                        Text(isManualMode ? "Use AI estimate instead" : "Enter nutrition manually")
+                            .font(AppTheme.Typography.caption1(weight: .semibold))
+                    }
+                    .foregroundColor(AppTheme.Colors.textSecondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, AppTheme.Spacing.xl)
+                .padding(.top, AppTheme.Spacing.md)
+
+                if isManualMode {
+                    VStack(spacing: AppTheme.Spacing.sm) {
+                        CalorieInputField(calories: $manualCalories)
+                        HStack(spacing: AppTheme.Spacing.sm) {
+                            MacroInputField(label: "Protein", value: $manualProtein, color: AppTheme.Colors.macroProtein)
+                            MacroInputField(label: "Carbs", value: $manualCarbs, color: AppTheme.Colors.macroCarbs)
+                            MacroInputField(label: "Fat", value: $manualFat, color: AppTheme.Colors.macroFat)
+                        }
+                    }
+                    .padding(.horizontal, AppTheme.Spacing.xl)
+                    .padding(.top, AppTheme.Spacing.md)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+
                 // Error
                 if let error = errorMessage {
-                    HStack(spacing: AppTheme.Spacing.sm) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(AppTheme.Colors.error)
-                        Text(error)
-                            .font(AppTheme.Typography.caption1())
-                            .foregroundColor(AppTheme.Colors.error)
-                        Spacer()
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+                        HStack(spacing: AppTheme.Spacing.sm) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(AppTheme.Colors.error)
+                            Text(error)
+                                .font(AppTheme.Typography.caption1())
+                                .foregroundColor(AppTheme.Colors.error)
+                            Spacer()
+                        }
+                        if !isManualMode {
+                            Button {
+                                HapticManager.shared.light()
+                                withAnimation(AppTheme.Animation.easeInOut) {
+                                    isManualMode = true
+                                    errorMessage = nil
+                                }
+                            } label: {
+                                Text("Enter nutrition manually instead")
+                                    .font(AppTheme.Typography.caption1(weight: .semibold))
+                                    .foregroundColor(AppTheme.Colors.textPrimary)
+                                    .underline()
+                            }
+                        }
                     }
                     .padding(AppTheme.Spacing.md)
                     .background(AppTheme.Colors.error.opacity(0.1))
@@ -538,23 +781,23 @@ struct AddMealPanel: View {
                     HStack(spacing: 10) {
                         if isLoading {
                             ProgressView()
-                                .tint(mealName.isEmpty ? AppTheme.Colors.textQuaternary : AppTheme.Colors.background)
+                                .tint(canLog ? AppTheme.Colors.background : AppTheme.Colors.textQuaternary)
                                 .scaleEffect(0.9)
                         } else {
-                            Image(systemName: "sparkles")
+                            Image(systemName: isManualMode ? "plus" : "sparkles")
                                 .font(.system(size: 15, weight: .semibold))
                             Text("Log to \(slotType.rawValue)")
                                 .font(AppTheme.Typography.body(weight: .semibold))
                         }
                     }
-                    .foregroundColor(mealName.isEmpty ? AppTheme.Colors.textQuaternary : AppTheme.Colors.background)
+                    .foregroundColor(canLog ? AppTheme.Colors.background : AppTheme.Colors.textQuaternary)
                     .frame(maxWidth: .infinity)
                     .frame(height: 54)
-                    .background(mealName.isEmpty ? AppTheme.Colors.surfaceElevated : AppTheme.Colors.accent)
+                    .background(canLog ? AppTheme.Colors.accent : AppTheme.Colors.surfaceElevated)
                     .cornerRadius(AppTheme.CornerRadius.xl)
                 }
-                .disabled(mealName.isEmpty || isLoading)
-                .animation(AppTheme.Animation.easeInOut, value: mealName.isEmpty)
+                .disabled(!canLog || isLoading)
+                .animation(AppTheme.Animation.easeInOut, value: canLog)
                 .animation(AppTheme.Animation.easeInOut, value: isLoading)
                 .padding(.horizontal, AppTheme.Spacing.xl)
                 .padding(.top, AppTheme.Spacing.xl)
@@ -615,10 +858,21 @@ struct AddMealPanel: View {
         }
     }
 
+    private var canLog: Bool {
+        guard !mealName.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
+        return isManualMode ? manualCalories > 0 : true
+    }
+
     // MARK: - Log meal
 
     private func logMeal() {
-        guard !mealName.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        let trimmed = mealName.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return }
+
+        if isManualMode {
+            logManualMeal(named: trimmed)
+            return
+        }
 
         isLoading = true
         errorMessage = nil
@@ -663,6 +917,32 @@ struct AddMealPanel: View {
                     HapticManager.shared.error()
                 }
             }
+        }
+    }
+
+    /// Log with user-provided nutrition — no AI call, works offline.
+    private func logManualMeal(named name: String) {
+        guard manualCalories > 0 else { return }
+
+        let meal = MealLog(
+            name: name,
+            calories: manualCalories,
+            protein: max(manualProtein, 0),
+            carbs: max(manualCarbs, 0),
+            fat: max(manualFat, 0),
+            emoji: slotType.emoji,
+            mealType: slotType.rawValue,
+            isAIGenerated: false
+        )
+        modelContext.insert(meal)
+        do {
+            try modelContext.save()
+            HapticManager.shared.success()
+            close()
+        } catch {
+            modelContext.delete(meal)
+            errorMessage = "Couldn't log that meal. Please try again."
+            HapticManager.shared.error()
         }
     }
 }

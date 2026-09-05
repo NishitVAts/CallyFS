@@ -551,6 +551,8 @@
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Cally needs your permisson to gather your health description";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Cally needs your permisson to gather your health description";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Cally needs your permisson to gather your health description";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Cally uses the microphone so you can log meals by voice.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Cally transcribes your speech to quickly log what you ate.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -589,6 +591,8 @@
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Cally needs your permisson to gather your health description";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Cally needs your permisson to gather your health description";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Cally needs your permisson to gather your health description";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Cally uses the microphone so you can log meals by voice.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Cally transcribes your speech to quickly log what you ate.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

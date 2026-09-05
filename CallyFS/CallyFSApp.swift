@@ -9,34 +9,20 @@ import SwiftData
 @main
 struct CallyFSApp: App {
     @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding: Bool = false
-    
-    let container: ModelContainer
-    
-    init() {
-        do {
-            let schema = Schema([
-                MealLog.self,
-                WaterLog.self,
-                WorkoutLog.self,
-                DailyGoals.self,
-                MealPlan.self
-            ])
-            
-            let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-            container = try ModelContainer(for: schema, configurations: [config])
-        } catch {
-            fatalError("Failed to initialize ModelContainer: \(error)")
-        }
-    }
 
     var body: some Scene {
         WindowGroup {
-            if hasCompletedOnboarding {
-                MainTabView()
-            } else {
-                OnBoardingView()
+            Group {
+                if hasCompletedOnboarding {
+                    MainTabView()
+                } else {
+                    OnBoardingView()
+                }
             }
+            // The UI is built entirely from dark, hardcoded colors, so pin the
+            // app to dark mode until/unless an adaptive palette is introduced.
+            .preferredColorScheme(.dark)
         }
-        .modelContainer(container)
+        .modelContainer(AppPersistence.container)
     }
 }

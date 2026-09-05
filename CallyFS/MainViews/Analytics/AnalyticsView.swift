@@ -10,294 +10,304 @@ import Charts
 struct AnalyticsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var allMeals: [MealLog]
-    
+
     @State private var selectedPeriod: TimePeriod = .week
     @State private var aiInsights: String?
     @State private var isLoadingInsights = false
-    
+    @State private var insightsLocked = false
+
     var body: some View {
         NavigationStack {
             ZStack {
                 AppTheme.Colors.background.ignoresSafeArea()
-                
+
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: AppTheme.Spacing.xxl) {
+                    VStack(spacing: AppTheme.Spacing.lg) {
+                        BrandHeader(title: "Analytics", subtitle: "Your trends")
+
                         periodSelector
-                        
-                        weeklyOverviewCard
-                        
-                        macroDistributionChart
-                        
-                        caloriesTrendChart
-                        
-                        if let insights = aiInsights {
-                            aiInsightsCard(insights)
-                        } else if isLoadingInsights {
-                            loadingInsightsCard
-                        }
-                        
-                        Spacer().frame(height: 100)
+                            .padding(.horizontal, AppTheme.Spacing.xl)
+
+                        overviewCard
+                            .padding(.horizontal, AppTheme.Spacing.xl)
+
+                        macroDistributionCard
+                            .padding(.horizontal, AppTheme.Spacing.xl)
+
+                        caloriesTrendCard
+                            .padding(.horizontal, AppTheme.Spacing.xl)
+
+                        insightsCard
+                            .padding(.horizontal, AppTheme.Spacing.xl)
+
+                        Spacer().frame(height: AppTheme.Spacing.xxl)
                     }
-                    .padding(.top, AppTheme.Spacing.xl)
                 }
             }
-            .navigationTitle("Analytics")
-            .navigationBarTitleDisplayMode(.large)
-            .onAppear {
-                loadAIInsights()
-            }
+            .navigationBarHidden(true)
+            .onAppear { loadAIInsights() }
         }
     }
-    
+
+    // MARK: - Period selector
+
     private var periodSelector: some View {
         HStack(spacing: AppTheme.Spacing.sm) {
             ForEach(TimePeriod.allCases, id: \.self) { period in
-                Button(action: {
+                Button {
                     HapticManager.shared.selectionChanged()
-                    withAnimation(AppTheme.Animation.spring) {
-                        selectedPeriod = period
-                    }
-                }) {
+                    withAnimation(AppTheme.Animation.spring) { selectedPeriod = period }
+                } label: {
                     Text(period.rawValue)
                         .font(AppTheme.Typography.subheadline(weight: .semibold))
                         .foregroundColor(selectedPeriod == period ? AppTheme.Colors.background : AppTheme.Colors.textSecondary)
-                        .padding(.horizontal, AppTheme.Spacing.lg)
+                        .frame(maxWidth: .infinity)
                         .padding(.vertical, AppTheme.Spacing.sm)
-                        .background(selectedPeriod == period ? AppTheme.Colors.accent : AppTheme.Colors.surfaceElevated)
-                        .cornerRadius(AppTheme.CornerRadius.md)
+                        .liquidGlass(
+                            in: RoundedRectangle(cornerRadius: AppTheme.CornerRadius.md),
+                            tint: selectedPeriod == period ? AppTheme.Colors.accent : nil,
+                            fallback: selectedPeriod == period ? AppTheme.Colors.accent : AppTheme.Colors.surfaceElevated
+                        )
                 }
             }
         }
-        .padding(.horizontal, AppTheme.Spacing.xxl)
     }
-    
-    private var weeklyOverviewCard: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            Text("Weekly Overview")
-                .font(AppTheme.Typography.headline())
-                .foregroundColor(AppTheme.Colors.textPrimary)
-            
-            let stats = calculateWeeklyStats()
-            
+
+    // MARK: - Overview
+
+    private var overviewCard: some View {
+        let stats = calculateStats(days: selectedPeriod.days)
+        return VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+            SectionLabel(text: selectedPeriod.title)
             HStack(spacing: AppTheme.Spacing.md) {
-                StatPill(
-                    label: "Avg Calories",
-                    value: "\(Int(stats.avgCalories))",
-                    unit: "kcal"
-                )
-                
-                StatPill(
-                    label: "Total Meals",
-                    value: "\(stats.totalMeals)",
-                    unit: "logged"
-                )
+                StatTile(label: "Avg Calories", value: "\(Int(stats.avgCalories))", unit: "kcal/day logged")
+                StatTile(label: "Meals Logged", value: "\(stats.totalMeals)", unit: "total")
             }
-            
             HStack(spacing: AppTheme.Spacing.md) {
-                StatPill(
-                    label: "Protein",
-                    value: "\(Int(stats.totalProtein))g",
-                    unit: "total"
-                )
-                
-                StatPill(
-                    label: "Carbs",
-                    value: "\(Int(stats.totalCarbs))g",
-                    unit: "total"
-                )
+                StatTile(label: "Protein", value: "\(Int(stats.totalProtein))g", unit: selectedPeriod.unitLabel)
+                StatTile(label: "Carbs", value: "\(Int(stats.totalCarbs))g", unit: selectedPeriod.unitLabel)
             }
         }
-        .padding(AppTheme.Spacing.xxl)
-        .elevatedCardStyle()
-        .padding(.horizontal, AppTheme.Spacing.xxl)
     }
-    
-    private var macroDistributionChart: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
+
+    // MARK: - Macro distribution
+
+    private var macroDistributionCard: some View {
+        let stats = calculateStats(days: selectedPeriod.days)
+        let total = stats.totalProtein + stats.totalCarbs + stats.totalFat
+
+        return VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
             Text("Macro Distribution")
                 .font(AppTheme.Typography.headline())
                 .foregroundColor(AppTheme.Colors.textPrimary)
-            
-            let stats = calculateWeeklyStats()
-            let total = stats.totalProtein + stats.totalCarbs + stats.totalFat
-            
+
             if total > 0 {
-                HStack(spacing: AppTheme.Spacing.md) {
-                    MacroBar(
-                        name: "Protein",
-                        grams: stats.totalProtein,
-                        percentage: (stats.totalProtein / total) * 100,
-                        color: AppTheme.Colors.macroProtein
-                    )
-                    
-                    MacroBar(
-                        name: "Carbs",
-                        grams: stats.totalCarbs,
-                        percentage: (stats.totalCarbs / total) * 100,
-                        color: AppTheme.Colors.macroCarbs
-                    )
-                    
-                    MacroBar(
-                        name: "Fat",
-                        grams: stats.totalFat,
-                        percentage: (stats.totalFat / total) * 100,
-                        color: AppTheme.Colors.macroFat
-                    )
+                GeometryReader { geo in
+                    HStack(spacing: 2) {
+                        Capsule().fill(AppTheme.Colors.macroProtein)
+                            .frame(width: max(geo.size.width * (stats.totalProtein / total) - 2, 0))
+                        Capsule().fill(AppTheme.Colors.macroCarbs)
+                            .frame(width: max(geo.size.width * (stats.totalCarbs / total) - 2, 0))
+                        Capsule().fill(AppTheme.Colors.macroFat)
+                            .frame(width: max(geo.size.width * (stats.totalFat / total) - 2, 0))
+                    }
+                }
+                .frame(height: 12)
+
+                HStack(spacing: AppTheme.Spacing.lg) {
+                    MacroLegend(name: "Protein", grams: stats.totalProtein, pct: stats.totalProtein / total, color: AppTheme.Colors.macroProtein)
+                    MacroLegend(name: "Carbs", grams: stats.totalCarbs, pct: stats.totalCarbs / total, color: AppTheme.Colors.macroCarbs)
+                    MacroLegend(name: "Fat", grams: stats.totalFat, pct: stats.totalFat / total, color: AppTheme.Colors.macroFat)
                 }
             } else {
-                Text("No data available")
-                    .font(AppTheme.Typography.subheadline())
-                    .foregroundColor(AppTheme.Colors.textTertiary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, AppTheme.Spacing.xxl)
+                emptyHint("Log meals to see your macro split")
             }
         }
-        .padding(AppTheme.Spacing.xxl)
+        .padding(AppTheme.Spacing.lg)
         .elevatedCardStyle()
-        .padding(.horizontal, AppTheme.Spacing.xxl)
     }
-    
-    private var caloriesTrendChart: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            Text("Calories Trend")
-                .font(AppTheme.Typography.headline())
-                .foregroundColor(AppTheme.Colors.textPrimary)
-            
-            let dailyData = calculateDailyCalories()
-            
-            if !dailyData.isEmpty {
-                Chart(dailyData) { item in
+
+    // MARK: - Trend
+
+    private var caloriesTrendCard: some View {
+        let trendData = calculateTrend()
+        return VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Calories Trend")
+                    .font(AppTheme.Typography.headline())
+                    .foregroundColor(AppTheme.Colors.textPrimary)
+                Spacer()
+                if selectedPeriod == .year {
+                    Text("daily avg per month")
+                        .font(AppTheme.Typography.caption2())
+                        .foregroundColor(AppTheme.Colors.textQuaternary)
+                }
+            }
+
+            if trendData.contains(where: { $0.calories > 0 }) {
+                Chart(trendData) { item in
                     BarMark(
-                        x: .value("Day", item.day),
+                        x: .value("Date", item.date, unit: selectedPeriod == .year ? .month : .day),
                         y: .value("Calories", item.calories)
                     )
                     .foregroundStyle(
-                        LinearGradient(
-                            colors: [AppTheme.Colors.gradientStart, AppTheme.Colors.gradientEnd],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
+                        LinearGradient(colors: [AppTheme.Colors.gradientStart, AppTheme.Colors.gradientEnd],
+                                       startPoint: .top, endPoint: .bottom)
                     )
-                    .cornerRadius(6)
+                    .cornerRadius(selectedPeriod == .month ? 2 : 6)
                 }
-                .frame(height: 200)
+                .frame(height: 180)
                 .chartYAxis {
-                    AxisMarks(position: .leading) { value in
-                        AxisValueLabel()
-                            .foregroundStyle(AppTheme.Colors.textTertiary)
+                    AxisMarks(position: .leading) { _ in
+                        AxisGridLine().foregroundStyle(AppTheme.Colors.border)
+                        AxisValueLabel().foregroundStyle(AppTheme.Colors.textTertiary)
                     }
                 }
                 .chartXAxis {
                     AxisMarks { value in
-                        AxisValueLabel()
-                            .foregroundStyle(AppTheme.Colors.textTertiary)
+                        AxisValueLabel {
+                            if let date = value.as(Date.self) {
+                                Text(date, format: xAxisFormat)
+                                    .foregroundStyle(AppTheme.Colors.textTertiary)
+                            }
+                        }
                     }
                 }
             } else {
-                Text("No data available")
+                emptyHint("No calories logged in this period yet")
+            }
+        }
+        .padding(AppTheme.Spacing.lg)
+        .elevatedCardStyle()
+    }
+
+    private var xAxisFormat: Date.FormatStyle {
+        switch selectedPeriod {
+        case .week:  return .dateTime.weekday(.abbreviated)
+        case .month: return .dateTime.day().month(.abbreviated)
+        case .year:  return .dateTime.month(.narrow)
+        }
+    }
+
+    // MARK: - Insights
+
+    @ViewBuilder
+    private var insightsCard: some View {
+        if insightsLocked {
+            HStack(spacing: AppTheme.Spacing.md) {
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(AppTheme.Colors.accent)
+                    .frame(width: 38, height: 38)
+                    .liquidGlass(in: RoundedRectangle(cornerRadius: AppTheme.CornerRadius.md),
+                                 fallback: AppTheme.Colors.surfaceHighlight)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("AI Insights — Pro")
+                        .font(AppTheme.Typography.callout(weight: .semibold))
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+                    Text("Upgrade to CallyFS Pro for weekly AI coaching on your nutrition.")
+                        .font(AppTheme.Typography.caption1())
+                        .foregroundColor(AppTheme.Colors.textTertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer()
+            }
+            .padding(AppTheme.Spacing.lg)
+            .elevatedCardStyle()
+        } else if let insights = aiInsights {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                HStack(spacing: AppTheme.Spacing.sm) {
+                    Image(systemName: "sparkles").foregroundColor(AppTheme.Colors.accent)
+                    Text("AI Insights")
+                        .font(AppTheme.Typography.headline())
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+                }
+                Text(insights)
+                    .font(AppTheme.Typography.subheadline())
+                    .foregroundColor(AppTheme.Colors.textSecondary)
+                    .lineSpacing(4)
+            }
+            .padding(AppTheme.Spacing.lg)
+            .elevatedCardStyle()
+        } else if isLoadingInsights {
+            HStack(spacing: AppTheme.Spacing.md) {
+                ProgressView().tint(AppTheme.Colors.accent)
+                Text("Generating insights…")
                     .font(AppTheme.Typography.subheadline())
                     .foregroundColor(AppTheme.Colors.textTertiary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, AppTheme.Spacing.xxl)
+                Spacer()
             }
+            .padding(AppTheme.Spacing.lg)
+            .elevatedCardStyle()
         }
-        .padding(AppTheme.Spacing.xxl)
-        .elevatedCardStyle()
-        .padding(.horizontal, AppTheme.Spacing.xxl)
     }
-    
-    private func aiInsightsCard(_ insights: String) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            HStack {
-                Image(systemName: "sparkles")
-                    .foregroundColor(AppTheme.Colors.accent)
-                Text("AI Insights")
-                    .font(AppTheme.Typography.headline())
-                    .foregroundColor(AppTheme.Colors.textPrimary)
-            }
-            
-            Text(insights)
-                .font(AppTheme.Typography.subheadline())
-                .foregroundColor(AppTheme.Colors.textSecondary)
-                .lineSpacing(4)
-        }
-        .padding(AppTheme.Spacing.xxl)
-        .elevatedCardStyle()
-        .padding(.horizontal, AppTheme.Spacing.xxl)
+
+    private func emptyHint(_ text: String) -> some View {
+        Text(text)
+            .font(AppTheme.Typography.subheadline())
+            .foregroundColor(AppTheme.Colors.textTertiary)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.vertical, AppTheme.Spacing.lg)
     }
-    
-    private var loadingInsightsCard: some View {
-        VStack(spacing: AppTheme.Spacing.lg) {
-            ProgressView()
-                .tint(AppTheme.Colors.accent)
-            Text("Generating insights...")
-                .font(AppTheme.Typography.subheadline())
-                .foregroundColor(AppTheme.Colors.textTertiary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(AppTheme.Spacing.xxl)
-        .elevatedCardStyle()
-        .padding(.horizontal, AppTheme.Spacing.xxl)
-    }
-    
-    private func calculateWeeklyStats() -> WeeklyStats {
+
+    // MARK: - Data
+
+    private func calculateStats(days: Int) -> PeriodStats {
         let calendar = Calendar.current
-        let weekAgo = calendar.date(byAdding: .day, value: -7, to: Date())!
-        
-        let weekMeals = allMeals.filter { $0.timestamp >= weekAgo }
-        
-        let totalCalories = weekMeals.reduce(0) { $0 + $1.calories }
-        let totalProtein = weekMeals.reduce(0.0) { $0 + $1.protein }
-        let totalCarbs = weekMeals.reduce(0.0) { $0 + $1.carbs }
-        let totalFat = weekMeals.reduce(0.0) { $0 + $1.fat }
-        
-        return WeeklyStats(
-            avgCalories: weekMeals.isEmpty ? 0 : Double(totalCalories) / 7,
-            totalMeals: weekMeals.count,
-            totalProtein: totalProtein,
-            totalCarbs: totalCarbs,
-            totalFat: totalFat
+        let periodStart = calendar.date(byAdding: .day, value: -days, to: Date())!
+        let meals = allMeals.filter { $0.timestamp >= periodStart }
+
+        let totalCalories = meals.reduce(0) { $0 + $1.calories }
+        // Average over days the user actually logged, so a 2-day-old account
+        // isn't shown a misleading near-zero number.
+        let loggedDays = Set(meals.map { calendar.startOfDay(for: $0.timestamp) }).count
+
+        return PeriodStats(
+            avgCalories: loggedDays == 0 ? 0 : Double(totalCalories) / Double(loggedDays),
+            totalMeals: meals.count,
+            totalProtein: meals.reduce(0.0) { $0 + $1.protein },
+            totalCarbs: meals.reduce(0.0) { $0 + $1.carbs },
+            totalFat: meals.reduce(0.0) { $0 + $1.fat }
         )
     }
-    
-    private func calculateDailyCalories() -> [DailyCalorieData] {
+
+    private func calculateTrend() -> [TrendPoint] {
         let calendar = Calendar.current
-        let weekAgo = calendar.date(byAdding: .day, value: -7, to: Date())!
-        
-        var dailyData: [DailyCalorieData] = []
-        
-        for i in 0..<7 {
-            let date = calendar.date(byAdding: .day, value: i, to: weekAgo)!
-            let dayMeals = allMeals.filter {
-                calendar.isDate($0.timestamp, inSameDayAs: date)
+        let today = calendar.startOfDay(for: Date())
+
+        switch selectedPeriod {
+        case .week, .month:
+            let days = selectedPeriod.days
+            return (0..<days).compactMap { offset in
+                guard let date = calendar.date(byAdding: .day, value: offset - (days - 1), to: today) else { return nil }
+                let dayMeals = allMeals.filter { calendar.isDate($0.timestamp, inSameDayAs: date) }
+                return TrendPoint(date: date, calories: dayMeals.reduce(0) { $0 + $1.calories })
             }
-            let totalCalories = dayMeals.reduce(0) { $0 + $1.calories }
-            
-            let formatter = DateFormatter()
-            formatter.dateFormat = "EEE"
-            let dayName = formatter.string(from: date)
-            
-            dailyData.append(DailyCalorieData(day: dayName, calories: totalCalories))
+        case .year:
+            // One point per month: average daily intake across logged days.
+            return (0..<12).compactMap { offset in
+                guard let monthStart = calendar.date(byAdding: .month, value: offset - 11, to: calendar.dateInterval(of: .month, for: today)!.start) else { return nil }
+                guard let monthEnd = calendar.date(byAdding: .month, value: 1, to: monthStart) else { return nil }
+                let monthMeals = allMeals.filter { $0.timestamp >= monthStart && $0.timestamp < monthEnd }
+                let loggedDays = Set(monthMeals.map { calendar.startOfDay(for: $0.timestamp) }).count
+                let total = monthMeals.reduce(0) { $0 + $1.calories }
+                return TrendPoint(date: monthStart, calories: loggedDays == 0 ? 0 : total / loggedDays)
+            }
         }
-        
-        return dailyData
     }
-    
+
     private func loadAIInsights() {
-        guard !isLoadingInsights else { return }
-        
-        isLoadingInsights = true
-        
-        let stats = calculateWeeklyStats()
-        
-        guard let profile = UserDefaults.standard.dictionary(forKey: "userProfile"),
+        guard !isLoadingInsights, aiInsights == nil, !insightsLocked else { return }
+        // Insights are always computed over the trailing week — that's what the
+        // backend endpoint expects, independent of the selected display period.
+        let stats = calculateStats(days: 7)
+        guard stats.totalMeals > 0,
+              let profile = UserDefaults.standard.dictionary(forKey: "userProfile"),
               let targetCalories = profile["calories"] as? Double,
               let goalString = profile["goal"] as? String,
-              let goal = FitnessGoal(rawValue: goalString) else {
-            isLoadingInsights = false
-            return
-        }
-        
+              let goal = FitnessGoal(rawValue: goalString) else { return }
+
+        isLoadingInsights = true
         Task {
             do {
                 let insights = try await AIService.shared.generateInsights(
@@ -308,21 +318,25 @@ struct AnalyticsView: View {
                     goal: goal,
                     targetCalories: targetCalories
                 )
-                
-                await MainActor.run {
-                    aiInsights = insights
-                    isLoadingInsights = false
-                }
+                await MainActor.run { aiInsights = insights; isLoadingInsights = false }
             } catch {
                 await MainActor.run {
                     isLoadingInsights = false
+                    // Insights is a Pro feature server-side; show the upgrade
+                    // teaser instead of failing silently. Other errors (offline,
+                    // signed out) stay quiet — insights is a bonus, not a blocker.
+                    if let apiError = error as? APIError, apiError.isEntitlementRequired {
+                        insightsLocked = true
+                    }
                 }
             }
         }
     }
 }
 
-struct WeeklyStats {
+// MARK: - Models & components
+
+struct PeriodStats {
     let avgCalories: Double
     let totalMeals: Int
     let totalProtein: Double
@@ -330,9 +344,9 @@ struct WeeklyStats {
     let totalFat: Double
 }
 
-struct DailyCalorieData: Identifiable {
+struct TrendPoint: Identifiable {
     let id = UUID()
-    let day: String
+    let date: Date
     let calories: Int
 }
 
@@ -340,57 +354,77 @@ enum TimePeriod: String, CaseIterable {
     case week = "Week"
     case month = "Month"
     case year = "Year"
+
+    var days: Int {
+        switch self {
+        case .week:  return 7
+        case .month: return 30
+        case .year:  return 365
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .week:  return "Last 7 Days"
+        case .month: return "Last 30 Days"
+        case .year:  return "Last 12 Months"
+        }
+    }
+
+    var unitLabel: String {
+        switch self {
+        case .week:  return "this week"
+        case .month: return "this month"
+        case .year:  return "this year"
+        }
+    }
 }
 
-struct StatPill: View {
+struct StatTile: View {
     let label: String
     let value: String
     let unit: String
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             Text(label)
                 .font(AppTheme.Typography.caption2(weight: .medium))
                 .foregroundColor(AppTheme.Colors.textQuaternary)
             Text(value)
-                .font(AppTheme.Typography.title3(weight: .bold))
+                .font(.system(size: 22, weight: .bold, design: .rounded))
                 .foregroundColor(AppTheme.Colors.textPrimary)
             Text(unit)
-                .font(AppTheme.Typography.caption1())
+                .font(AppTheme.Typography.caption2())
                 .foregroundColor(AppTheme.Colors.textTertiary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppTheme.Spacing.lg)
-        .background(AppTheme.Colors.surfaceHighlight)
-        .cornerRadius(AppTheme.CornerRadius.md)
+        .background(AppTheme.Colors.surfaceHighlight, in: RoundedRectangle(cornerRadius: AppTheme.CornerRadius.lg))
     }
 }
 
-struct MacroBar: View {
+struct MacroLegend: View {
     let name: String
     let grams: Double
-    let percentage: Double
+    let pct: Double
     let color: Color
-    
+
     var body: some View {
-        VStack(spacing: AppTheme.Spacing.sm) {
-            Text(name)
-                .font(AppTheme.Typography.caption1(weight: .semibold))
-                .foregroundColor(AppTheme.Colors.textSecondary)
-            
+        VStack(alignment: .leading, spacing: 3) {
+            HStack(spacing: 5) {
+                Circle().fill(color).frame(width: 7, height: 7)
+                Text(name)
+                    .font(AppTheme.Typography.caption1(weight: .semibold))
+                    .foregroundColor(AppTheme.Colors.textSecondary)
+            }
             Text("\(Int(grams))g")
                 .font(AppTheme.Typography.subheadline(weight: .bold))
                 .foregroundColor(AppTheme.Colors.textPrimary)
-            
-            Text("\(Int(percentage))%")
+            Text("\(Int(pct * 100))%")
                 .font(AppTheme.Typography.caption2())
                 .foregroundColor(AppTheme.Colors.textTertiary)
-            
-            RoundedRectangle(cornerRadius: 4)
-                .fill(color)
-                .frame(width: 40, height: 8)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

@@ -26,6 +26,7 @@ final class OnboardingVM: ObservableObject {
     @Published var targetProtein: Double = 150
     @Published var targetCarbs: Double = 200
     @Published var targetFat: Double = 65
+    @Published var targetWater: Double = 2000
 
     private let healthManager = HealthKitManager.shared
 
@@ -93,38 +94,19 @@ final class OnboardingVM: ObservableObject {
     }
 
     private func calculateGoals(workouts: workoutRange, goal: FitnessGoal, ageYears: Int) {
-        let weightKg = Double(weight) ?? 70.0
-        let heightCm = (Double(height) ?? 1.70) * 100
-
-        let bmr: Double
-        switch sex {
-        case .male:
-            bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * Double(ageYears)) + 5
-        case .female:
-            bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * Double(ageYears)) - 161
-        default:
-            let m = (10 * weightKg) + (6.25 * heightCm) - (5 * Double(ageYears)) + 5
-            let f = (10 * weightKg) + (6.25 * heightCm) - (5 * Double(ageYears)) - 161
-            bmr = (m + f) / 2
-        }
-
-        let tdee = bmr * workouts.activityMultiplier
-        switch goal {
-        case .lose:               targetCalories = tdee - 500
-        case .gain:               targetCalories = tdee + 400
-        case .maintain, .improve: targetCalories = tdee
-        case .notSet:             targetCalories = 2000
-        }
-
-        switch goal {
-        case .lose:
-            targetProtein = weightKg * 2.0; targetFat = weightKg * 0.8
-        case .gain:
-            targetProtein = weightKg * 2.2; targetFat = weightKg * 1.0
-        default:
-            targetProtein = weightKg * 1.8; targetFat = weightKg * 0.9
-        }
-        targetCarbs = max((targetCalories - targetProtein * 4 - targetFat * 9) / 4, 0)
+        let targets = GoalCalculator.targets(
+            weightKg: Double(weight) ?? 70.0,
+            heightCm: (Double(height) ?? 1.70) * 100,
+            ageYears: ageYears,
+            sex: sex,
+            workouts: workouts,
+            goal: goal
+        )
+        targetCalories = targets.calories
+        targetProtein = targets.protein
+        targetCarbs = targets.carbs
+        targetFat = targets.fat
+        targetWater = targets.water
     }
 
     private func persist(workouts: workoutRange, goal: FitnessGoal, hasTrackedBefore: Bool,
@@ -136,7 +118,7 @@ final class OnboardingVM: ObservableObject {
             "barriers": barriers.map { $0.rawValue },
             "dietRequirements": dietRequirements.map { $0.rawValue },
             "calories": targetCalories, "protein": targetProtein,
-            "carbs": targetCarbs, "fat": targetFat
+            "carbs": targetCarbs, "fat": targetFat, "water": targetWater
         ]
         UserDefaults.standard.set(profile, forKey: "userProfile")
     }

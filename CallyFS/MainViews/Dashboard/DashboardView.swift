@@ -13,69 +13,106 @@ struct DashboardView: View {
     
     @StateObject private var viewModel = DashboardViewModel()
     @State private var selectedDate = Date()
-    
+    @State private var errorMessage: String?
+    @State private var showAddMeal = false
+
     var body: some View {
-        ZStack {
-            AppTheme.Colors.background.ignoresSafeArea()
-            
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    
-                    headerSection
-                    
-                    calorieCard
-                        .padding(.horizontal, AppTheme.Spacing.xxl)
-                        .padding(.top, AppTheme.Spacing.xxl)
-                    
-                    macrosSection
-                        .padding(.horizontal, AppTheme.Spacing.xxl)
-                        .padding(.top, AppTheme.Spacing.lg)
-                    
-                    waterTrackingCard
-                        .padding(.horizontal, AppTheme.Spacing.xxl)
-                        .padding(.top, AppTheme.Spacing.xxl)
-                    
-                    mealsSection
-                        .padding(.top, AppTheme.Spacing.xxxl)
-                    
-                    Spacer().frame(height: 120)
-                    
+        NavigationStack {
+            ZStack {
+                AppTheme.Colors.background.ignoresSafeArea()
+
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+
+                        headerSection
+
+                        calorieCard
+                            .padding(.horizontal, AppTheme.Spacing.xl)
+                            .padding(.top, AppTheme.Spacing.lg)
+
+                        macrosSection
+                            .padding(.horizontal, AppTheme.Spacing.xl)
+                            .padding(.top, AppTheme.Spacing.md)
+
+                        waterTrackingCard
+                            .padding(.horizontal, AppTheme.Spacing.xl)
+                            .padding(.top, AppTheme.Spacing.md)
+
+                        mealsSection
+                            .padding(.top, AppTheme.Spacing.xl)
+
+                        Spacer().frame(height: AppTheme.Spacing.xxl)
+
+                    }
                 }
             }
-        }
-        .onAppear {
-            viewModel.loadProfile()
+            .onAppear {
+                viewModel.loadProfile()
+            }
+            .sheet(isPresented: $showAddMeal) {
+                QuickAddMealView()
+            }
+            .alert("Something went wrong", isPresented: Binding(
+                get: { errorMessage != nil },
+                set: { if !$0 { errorMessage = nil } }
+            )) {
+                Button("OK", role: .cancel) { errorMessage = nil }
+            } message: {
+                Text(errorMessage ?? "")
+            }
         }
     }
-    
+
     private var headerSection: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
+        HStack(spacing: AppTheme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(viewModel.greetingText)
-                    .font(.custom("Georgia", size: 14))
+                    .font(.custom("Georgia", size: 13))
                     .foregroundColor(AppTheme.Colors.textTertiary)
                 Text(viewModel.userName)
-                    .font(.custom("Georgia-Bold", size: 24))
+                    .font(.custom("Georgia-Bold", size: 20))
                     .foregroundColor(AppTheme.Colors.textPrimary)
             }
             Spacer()
+
+            Button {
+                HapticManager.shared.fabTap()
+                showAddMeal = true
+            } label: {
+                Image(systemName: "plus")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(AppTheme.Colors.background)
+                    .frame(width: 44, height: 44)
+                    .liquidGlass(in: Circle(), tint: AppTheme.Colors.accent, fallback: AppTheme.Colors.accent)
+            }
+            .accessibilityLabel("Add meal")
+
             NavigationLink {
                 SettingsView()
             } label: {
-                Image(systemName: "gear.circle.fill")
+                Image(systemName: "gearshape.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(AppTheme.Colors.textSecondary)
+                    .frame(width: 44, height: 44)
+                    .liquidGlass(in: Circle(), fallback: AppTheme.Colors.surfaceElevated)
             }
-
+            .accessibilityLabel("Settings")
         }
-        .padding(.horizontal, AppTheme.Spacing.xxl)
-        .padding(.top, AppTheme.Spacing.xl)
+        .padding(.horizontal, AppTheme.Spacing.xl)
+        .padding(.top, AppTheme.Spacing.sm)
     }
     
     private var calorieCard: some View {
         let todayMeals = mealsForToday()
         let eatenCalories = todayMeals.reduce(0) { $0 + $1.calories }
-        let remaining = max(Int(viewModel.goalCalories) - eatenCalories, 0)
+        let goal = Int(viewModel.goalCalories)
+        let isOver = eatenCalories > goal
+        let diff = abs(goal - eatenCalories)
         let progress = min(Double(eatenCalories) / viewModel.goalCalories, 1.0)
-        
+        let barColors = isOver
+            ? [AppTheme.Colors.calorieOver, AppTheme.Colors.calorieOver.opacity(0.7)]
+            : [AppTheme.Colors.gradientStart, AppTheme.Colors.gradientEnd]
+
         return ZStack {
             RoundedRectangle(cornerRadius: AppTheme.CornerRadius.xxl)
                 .fill(
@@ -107,69 +144,69 @@ struct DashboardView: View {
             
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
-                    HStack(spacing: 8) {
+                    HStack(spacing: 6) {
                         Text("Daily")
-                            .font(.custom("Georgia", size: 15))
+                            .font(.custom("Georgia", size: 12))
                             .foregroundColor(AppTheme.Colors.textSecondary)
                         Text("CALORIES")
-                            .font(.custom("Georgia-Bold", size: 15))
+                            .font(.custom("Georgia-Bold", size: 12))
                             .foregroundColor(AppTheme.Colors.accentSecondary)
-                            .tracking(1.8)
+                            .tracking(1.6)
                     }
                     Spacer()
                 }
-                
-                Spacer().frame(height: 22)
-                
+
+                Spacer().frame(height: 12)
+
                 Text("Eaten \(eatenCalories)")
-                    .font(.custom("Georgia", size: 14))
+                    .font(.custom("Georgia", size: 12))
                     .foregroundColor(AppTheme.Colors.textTertiary)
-                
-                Spacer().frame(height: 8)
-                
-                HStack(alignment: .lastTextBaseline, spacing: 8) {
-                    Text("\(remaining)")
-                        .font(.system(size: 64, weight: .black, design: .rounded))
-                        .foregroundColor(AppTheme.Colors.textPrimary)
-                    Text("KCAL LEFT")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(AppTheme.Colors.textSecondary)
-                        .tracking(1.2)
-                        .padding(.bottom, 10)
+
+                Spacer().frame(height: 2)
+
+                HStack(alignment: .lastTextBaseline, spacing: 6) {
+                    Text(isOver ? "+\(diff)" : "\(diff)")
+                        .font(.system(size: 42, weight: .black, design: .rounded))
+                        .foregroundColor(isOver ? AppTheme.Colors.calorieOver : AppTheme.Colors.textPrimary)
+                    Text(isOver ? "KCAL OVER" : "KCAL LEFT")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(isOver ? AppTheme.Colors.calorieOver : AppTheme.Colors.textSecondary)
+                        .tracking(1.0)
+                        .padding(.bottom, 7)
                 }
-                
-                Spacer().frame(height: 22)
-                
+
+                Spacer().frame(height: 14)
+
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 10)
+                        RoundedRectangle(cornerRadius: 8)
                             .fill(AppTheme.Colors.surfaceHighlight)
-                            .frame(height: 40)
-                        
-                        RoundedRectangle(cornerRadius: 10)
+                            .frame(height: 26)
+
+                        RoundedRectangle(cornerRadius: 8)
                             .fill(
                                 LinearGradient(
-                                    colors: [AppTheme.Colors.gradientStart, AppTheme.Colors.gradientEnd],
+                                    colors: barColors,
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
                             )
-                            .frame(width: geo.size.width * progress, height: 40)
+                            .frame(width: geo.size.width * progress, height: 26)
                             .animation(AppTheme.Animation.springBouncy, value: progress)
-                        
+
                         if eatenCalories > 0 {
                             Text("\(eatenCalories) KCAL")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(.system(size: 10, weight: .bold))
                                 .foregroundColor(AppTheme.Colors.background)
-                                .padding(.leading, 14)
+                                .padding(.leading, 11)
                         }
                     }
                 }
-                .frame(height: 40)
+                .frame(height: 26)
             }
-            .padding(AppTheme.Spacing.xxl)
+            .padding(AppTheme.Spacing.lg)
         }
-        .frame(height: 240)
+        .frame(height: 168)
     }
     
     private var macrosSection: some View {
@@ -178,7 +215,7 @@ struct DashboardView: View {
         let totalCarbs = todayMeals.reduce(0.0) { $0 + $1.carbs }
         let totalFat = todayMeals.reduce(0.0) { $0 + $1.fat }
         
-        return HStack(spacing: 14) {
+        return HStack(spacing: 10) {
             MacroCard(
                 name: "Carbs",
                 current: totalCarbs,
@@ -205,78 +242,77 @@ struct DashboardView: View {
     private var waterTrackingCard: some View {
         let todayWater = waterForToday()
         let totalWater = todayWater.reduce(0.0) { $0 + $1.amount }
-        let goalWater = 2000.0
+        let goalWater = viewModel.goalWater
         let progress = min(totalWater / goalWater, 1.0)
         
-        return VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
+        return VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             HStack {
                 Image(systemName: "drop.fill")
-                    .font(.system(size: 20))
+                    .font(.system(size: 15))
                     .foregroundColor(AppTheme.Colors.info)
-                
+
                 Text("Water Intake")
-                    .font(AppTheme.Typography.body(weight: .semibold))
+                    .font(AppTheme.Typography.subheadline(weight: .semibold))
                     .foregroundColor(AppTheme.Colors.textPrimary)
-                
+
                 Spacer()
-                
+
                 Button(action: {
                     addWater(250)
                 }) {
                     HStack(spacing: 4) {
                         Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 16))
+                            .font(.system(size: 14))
                         Text("250ml")
-                            .font(AppTheme.Typography.caption1(weight: .semibold))
+                            .font(AppTheme.Typography.caption2(weight: .semibold))
                     }
                     .foregroundColor(AppTheme.Colors.info)
-                    .padding(.horizontal, AppTheme.Spacing.md)
-                    .padding(.vertical, AppTheme.Spacing.xs)
-                    .background(AppTheme.Colors.info.opacity(0.15))
-                    .cornerRadius(AppTheme.CornerRadius.sm)
+                    .padding(.horizontal, AppTheme.Spacing.sm)
+                    .padding(.vertical, 5)
+                    .liquidGlass(in: Capsule(), fallback: AppTheme.Colors.info.opacity(0.15))
                 }
             }
-            
+
             HStack(alignment: .lastTextBaseline, spacing: 4) {
                 Text("\(Int(totalWater))")
-                    .font(.system(size: 32, weight: .bold))
+                    .font(.system(size: 24, weight: .bold))
                     .foregroundColor(AppTheme.Colors.textPrimary)
                 Text("/ \(Int(goalWater)) ml")
-                    .font(AppTheme.Typography.body())
+                    .font(AppTheme.Typography.subheadline())
                     .foregroundColor(AppTheme.Colors.textTertiary)
             }
-            
+
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 6)
+                    RoundedRectangle(cornerRadius: 5)
                         .fill(AppTheme.Colors.surfaceHighlight)
-                        .frame(height: 12)
-                    
-                    RoundedRectangle(cornerRadius: 6)
+                        .frame(height: 8)
+
+                    RoundedRectangle(cornerRadius: 5)
                         .fill(AppTheme.Colors.info)
-                        .frame(width: geo.size.width * progress, height: 12)
+                        .frame(width: geo.size.width * progress, height: 8)
                         .animation(AppTheme.Animation.springBouncy, value: progress)
                 }
             }
-            .frame(height: 12)
+            .frame(height: 8)
         }
-        .padding(AppTheme.Spacing.xl)
+        .padding(AppTheme.Spacing.lg)
         .elevatedCardStyle()
     }
     
     private var mealsSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("Today's Meals")
-                    .font(.custom("Georgia-Bold", size: 20))
+                    .font(.custom("Georgia-Bold", size: 17))
                     .foregroundColor(AppTheme.Colors.textPrimary)
                 Spacer()
                 Text(Date(), style: .date)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 11, weight: .medium))
                     .foregroundColor(AppTheme.Colors.textQuaternary)
             }
-            .padding(.horizontal, AppTheme.Spacing.xxl)
-            
+            .padding(.horizontal, AppTheme.Spacing.xl)
+
             ForEach(MealSlot.SlotType.allCases, id: \.self) { slotType in
                 NavigationLink(destination: MealDetailView(slotType: slotType)) {
                     MealSlotCard(
@@ -285,7 +321,7 @@ struct DashboardView: View {
                     )
                 }
                 .buttonStyle(.plain)
-                .padding(.horizontal, AppTheme.Spacing.xxl)
+                .padding(.horizontal, AppTheme.Spacing.xl)
             }
         }
     }
@@ -307,10 +343,16 @@ struct DashboardView: View {
     }
     
     private func addWater(_ amount: Double) {
-        HapticManager.shared.success()
         let waterLog = WaterLog(amount: amount)
         modelContext.insert(waterLog)
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+            HapticManager.shared.success()
+        } catch {
+            modelContext.delete(waterLog)
+            errorMessage = "Couldn't save your water intake. Please try again."
+            HapticManager.shared.error()
+        }
     }
 }
 
@@ -326,35 +368,35 @@ struct MacroCard: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             Text(name)
-                .font(AppTheme.Typography.footnote(weight: .semibold))
+                .font(AppTheme.Typography.caption1(weight: .semibold))
                 .foregroundColor(AppTheme.Colors.textSecondary)
-            
+
             HStack(alignment: .lastTextBaseline, spacing: 0) {
                 Text("\(Int(current))")
-                    .font(AppTheme.Typography.body(weight: .bold))
+                    .font(AppTheme.Typography.subheadline(weight: .bold))
                     .foregroundColor(AppTheme.Colors.textPrimary)
                 Text(" / \(Int(total))g")
-                    .font(AppTheme.Typography.footnote())
+                    .font(AppTheme.Typography.caption2())
                     .foregroundColor(AppTheme.Colors.textTertiary)
             }
-            
+
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
+                    RoundedRectangle(cornerRadius: 3)
                         .fill(AppTheme.Colors.surfaceHighlight)
-                        .frame(height: 5)
-                    
-                    RoundedRectangle(cornerRadius: 4)
+                        .frame(height: 4)
+
+                    RoundedRectangle(cornerRadius: 3)
                         .fill(color)
-                        .frame(width: geo.size.width * progress, height: 5)
+                        .frame(width: geo.size.width * progress, height: 4)
                         .animation(AppTheme.Animation.springBouncy, value: progress)
                 }
             }
-            .frame(height: 5)
+            .frame(height: 4)
         }
-        .padding(14)
+        .padding(11)
         .cardStyle()
     }
 }
@@ -376,78 +418,78 @@ struct MealSlotCard: View {
     }
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             ZStack(alignment: .topTrailing) {
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: 13)
                     .fill(AppTheme.Colors.surfaceElevated)
-                    .frame(width: 56, height: 56)
+                    .frame(width: 44, height: 44)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16)
+                        RoundedRectangle(cornerRadius: 13)
                             .stroke(AppTheme.Colors.border, lineWidth: 1)
                     )
-                
+
                 Text(slotType.emoji)
-                    .font(.system(size: 26))
-                    .frame(width: 56, height: 56)
-                
+                    .font(.system(size: 21))
+                    .frame(width: 44, height: 44)
+
                 if isLogged {
                     Circle()
                         .fill(AppTheme.Colors.textPrimary)
-                        .frame(width: 18, height: 18)
+                        .frame(width: 16, height: 16)
                         .overlay(
                             Image(systemName: "checkmark")
-                                .font(.system(size: 9, weight: .bold))
+                                .font(.system(size: 8, weight: .bold))
                                 .foregroundColor(AppTheme.Colors.background)
                         )
                         .shadow(color: .black.opacity(0.2), radius: 2)
-                        .offset(x: 8, y: -8)
+                        .offset(x: 5, y: -5)
                 }
             }
-            
-            VStack(alignment: .leading, spacing: 5) {
+
+            VStack(alignment: .leading, spacing: 3) {
                 Text(slotType.rawValue)
-                    .font(AppTheme.Typography.callout(weight: .semibold))
+                    .font(AppTheme.Typography.subheadline(weight: .semibold))
                     .foregroundColor(AppTheme.Colors.textPrimary)
-                
+
                 if isLogged {
                     if hasCalculating {
                         Text("Calculating...")
-                            .font(AppTheme.Typography.footnote(weight: .medium))
+                            .font(AppTheme.Typography.caption1(weight: .medium))
                             .foregroundColor(AppTheme.Colors.textTertiary)
-                            
+
                     } else {
-                        HStack(spacing: 8) {
+                        HStack(spacing: 6) {
                             Text("\(meals.count) item\(meals.count == 1 ? "" : "s")")
-                                .font(AppTheme.Typography.footnote())
+                                .font(AppTheme.Typography.caption1())
                                 .foregroundColor(AppTheme.Colors.textSecondary)
                             Circle()
                                 .fill(AppTheme.Colors.textQuaternary)
                                 .frame(width: 3, height: 3)
                             Text("\(totalCalories) kcal")
-                                .font(AppTheme.Typography.footnote(weight: .semibold))
+                                .font(AppTheme.Typography.caption1(weight: .semibold))
                                 .foregroundColor(AppTheme.Colors.accentSecondary)
                         }
                     }
                 } else {
                     Text("Tap to add food")
-                        .font(AppTheme.Typography.footnote())
+                        .font(AppTheme.Typography.caption1())
                         .foregroundColor(AppTheme.Colors.textQuaternary)
                 }
             }
-            
+
             Spacer()
-            
+
             Image(systemName: "chevron.right")
-                .font(AppTheme.Typography.footnote(weight: .semibold))
+                .font(AppTheme.Typography.caption1(weight: .semibold))
                 .foregroundColor(AppTheme.Colors.textDisabled)
         }
-        .padding(18)
+        .padding(13)
         .background(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 16)
                 .fill(AppTheme.Colors.surface)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 16)
                 .stroke(AppTheme.Colors.borderLight, lineWidth: 1)
         )
     }
@@ -476,7 +518,8 @@ final class DashboardViewModel: ObservableObject {
     @Published var goalProtein = 150.0
     @Published var goalCarbs = 200.0
     @Published var goalFat = 65.0
-    
+    @Published var goalWater = 2000.0
+
     var greetingText: String {
         switch Calendar.current.component(.hour, from: Date()) {
         case 5..<12: return "Good morning,"
@@ -492,6 +535,7 @@ final class DashboardViewModel: ObservableObject {
         goalProtein = profile["protein"] as? Double ?? 150
         goalCarbs = profile["carbs"] as? Double ?? 200
         goalFat = profile["fat"] as? Double ?? 65
+        goalWater = profile["water"] as? Double ?? 2000
     }
 }
 

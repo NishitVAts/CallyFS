@@ -12,6 +12,7 @@ import HealthKit
 
 struct OnBoardingView: View {
     @StateObject var vm = OnboardingVM()
+    @ObservedObject private var auth = AuthService.shared
     @State private var onboardingStep: OnboardingScreens = .applehealth
     @State private var selectedWeight: Measurement<UnitMass>?
     @Environment(\.locale) var locale
@@ -544,8 +545,27 @@ extension OnBoardingView {
             Text("Your personalized plan is ready.\nLet's build something great.")
                 .font(.system(size: 15)).foregroundColor(Color(hex: "#777777"))
                 .multilineTextAlignment(.center).lineSpacing(4).padding(.horizontal, 40)
-            Spacer().frame(height: 48)
-          
+            Spacer().frame(height: 40)
+
+            if auth.isSignedIn {
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.system(size: 14))
+                        .foregroundColor(Color(hex: "#4CAF50"))
+                    Text("Signed in — AI features are ready")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(Color(hex: "#AAAAAA"))
+                }
+            } else {
+                VStack(spacing: 10) {
+                    SignInBlock(prefillName: userName)
+                    Text("Sign in to enable AI nutrition analysis.\nYou can also do this later in Settings.")
+                        .font(.system(size: 12)).foregroundColor(Color(hex: "#666666"))
+                        .multilineTextAlignment(.center).lineSpacing(3)
+                }
+                .padding(.horizontal, 40)
+            }
+
             Spacer()
         }
     }

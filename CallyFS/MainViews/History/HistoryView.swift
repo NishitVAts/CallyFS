@@ -9,307 +9,283 @@ import SwiftData
 struct HistoryView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \MealLog.timestamp, order: .reverse) private var allMeals: [MealLog]
-    
+
     @State private var selectedDate = Date()
     @State private var showCalendar = false
-    
+    @State private var editingMeal: MealLog?
+
     var body: some View {
         NavigationStack {
             ZStack {
                 AppTheme.Colors.background.ignoresSafeArea()
-                
-                VStack(spacing: 0) {
-                    dateSelector
-                    
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: AppTheme.Spacing.lg) {
-                            dailySummaryCard
-                            
-                            mealsListSection
-                            
-                            Spacer().frame(height: 100)
-                        }
-                        .padding(.top, AppTheme.Spacing.xl)
+
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: AppTheme.Spacing.lg) {
+                        BrandHeader(title: "History", subtitle: "Look back")
+
+                        dateSelector
+                            .padding(.horizontal, AppTheme.Spacing.xl)
+
+                        dailySummaryCard
+                            .padding(.horizontal, AppTheme.Spacing.xl)
+
+                        mealsListSection
+
+                        Spacer().frame(height: AppTheme.Spacing.xxl)
                     }
                 }
             }
-            .navigationTitle("History")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarHidden(true)
             .sheet(isPresented: $showCalendar) {
                 CalendarPickerView(selectedDate: $selectedDate)
             }
+            .sheet(item: $editingMeal) { meal in
+                EditMealView(meal: meal)
+            }
         }
     }
-    
+
+    // MARK: - Date selector
+
     private var dateSelector: some View {
-        HStack {
-            Button(action: {
-                HapticManager.shared.light()
-                withAnimation(AppTheme.Animation.spring) {
-                    selectedDate = Calendar.current.date(byAdding: .day, value: -1, to: selectedDate) ?? selectedDate
-                }
-            }) {
-                Image(systemName: "chevron.left")
-                    .font(AppTheme.Typography.subheadline(weight: .semibold))
-                    .foregroundColor(AppTheme.Colors.textSecondary)
-                    .frame(width: 44, height: 44)
-                    .background(AppTheme.Colors.surfaceElevated)
-                    .clipShape(Circle())
+        HStack(spacing: AppTheme.Spacing.md) {
+            navButton(icon: "chevron.left") {
+                selectedDate = Calendar.current.date(byAdding: .day, value: -1, to: selectedDate) ?? selectedDate
             }
-            
-            Spacer()
-            
-            Button(action: {
+            .disabled(false)
+
+            Button {
                 HapticManager.shared.light()
                 showCalendar = true
-            }) {
-                VStack(spacing: 2) {
-                    Text(selectedDate, style: .date)
-                        .font(AppTheme.Typography.body(weight: .semibold))
-                        .foregroundColor(AppTheme.Colors.textPrimary)
-                    
-                    if Calendar.current.isDateInToday(selectedDate) {
-                        Text("Today")
-                            .font(AppTheme.Typography.caption2())
-                            .foregroundColor(AppTheme.Colors.textTertiary)
-                    }
+            } label: {
+                HStack(spacing: AppTheme.Spacing.sm) {
+                    Image(systemName: "calendar")
+                        .font(.system(size: 13, weight: .semibold))
+                    Text(dateTitle)
+                        .font(AppTheme.Typography.subheadline(weight: .semibold))
                 }
+                .foregroundColor(AppTheme.Colors.textPrimary)
+                .frame(maxWidth: .infinity)
+                .frame(height: 44)
+                .liquidGlass(in: Capsule(), fallback: AppTheme.Colors.surfaceElevated)
             }
-            
-            Spacer()
-            
-            Button(action: {
-                HapticManager.shared.light()
-                withAnimation(AppTheme.Animation.spring) {
-                    selectedDate = Calendar.current.date(byAdding: .day, value: 1, to: selectedDate) ?? selectedDate
-                }
-            }) {
-                Image(systemName: "chevron.right")
-                    .font(AppTheme.Typography.subheadline(weight: .semibold))
-                    .foregroundColor(AppTheme.Colors.textSecondary)
-                    .frame(width: 44, height: 44)
-                    .background(AppTheme.Colors.surfaceElevated)
-                    .clipShape(Circle())
+
+            navButton(icon: "chevron.right") {
+                selectedDate = Calendar.current.date(byAdding: .day, value: 1, to: selectedDate) ?? selectedDate
             }
             .disabled(Calendar.current.isDateInToday(selectedDate))
-            .opacity(Calendar.current.isDateInToday(selectedDate) ? 0.5 : 1)
+            .opacity(Calendar.current.isDateInToday(selectedDate) ? 0.4 : 1)
         }
-        .padding(.horizontal, AppTheme.Spacing.xxl)
-        .padding(.vertical, AppTheme.Spacing.lg)
     }
-    
+
+    private func navButton(icon: String, action: @escaping () -> Void) -> some View {
+        Button {
+            HapticManager.shared.light()
+            withAnimation(AppTheme.Animation.spring) { action() }
+        } label: {
+            Image(systemName: icon)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundColor(AppTheme.Colors.textSecondary)
+                .frame(width: 44, height: 44)
+                .liquidGlass(in: Circle(), fallback: AppTheme.Colors.surfaceElevated)
+        }
+    }
+
+    private var dateTitle: String {
+        if Calendar.current.isDateInToday(selectedDate) { return "Today" }
+        if Calendar.current.isDateInYesterday(selectedDate) { return "Yesterday" }
+        return selectedDate.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
+    }
+
+    // MARK: - Summary
+
     private var dailySummaryCard: some View {
         let dayMeals = mealsForSelectedDate()
         let totalCalories = dayMeals.reduce(0) { $0 + $1.calories }
         let totalProtein = dayMeals.reduce(0.0) { $0 + $1.protein }
         let totalCarbs = dayMeals.reduce(0.0) { $0 + $1.carbs }
         let totalFat = dayMeals.reduce(0.0) { $0 + $1.fat }
-        
+
         return VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            Text("Daily Summary")
-                .font(AppTheme.Typography.headline())
-                .foregroundColor(AppTheme.Colors.textPrimary)
-            
-            HStack(spacing: AppTheme.Spacing.md) {
-                SummaryPill(
-                    icon: "flame.fill",
-                    value: "\(totalCalories)",
-                    label: "Calories"
-                )
-                
-                SummaryPill(
-                    icon: "fork.knife",
-                    value: "\(dayMeals.count)",
-                    label: "Meals"
-                )
+            HStack(alignment: .lastTextBaseline) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\(totalCalories)")
+                        .font(.system(size: 34, weight: .black, design: .rounded))
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+                    Text("calories consumed")
+                        .font(AppTheme.Typography.caption1())
+                        .foregroundColor(AppTheme.Colors.textTertiary)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("\(dayMeals.count)")
+                        .font(AppTheme.Typography.title3(weight: .bold))
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+                    Text(dayMeals.count == 1 ? "meal" : "meals")
+                        .font(AppTheme.Typography.caption1())
+                        .foregroundColor(AppTheme.Colors.textTertiary)
+                }
             }
-            
+
             HStack(spacing: AppTheme.Spacing.sm) {
-                MacroPill(name: "P", value: totalProtein, color: AppTheme.Colors.macroProtein)
-                MacroPill(name: "C", value: totalCarbs, color: AppTheme.Colors.macroCarbs)
-                MacroPill(name: "F", value: totalFat, color: AppTheme.Colors.macroFat)
+                MacroChip(name: "Protein", value: totalProtein, color: AppTheme.Colors.macroProtein)
+                MacroChip(name: "Carbs", value: totalCarbs, color: AppTheme.Colors.macroCarbs)
+                MacroChip(name: "Fat", value: totalFat, color: AppTheme.Colors.macroFat)
             }
         }
-        .padding(AppTheme.Spacing.xxl)
+        .padding(AppTheme.Spacing.lg)
         .elevatedCardStyle()
-        .padding(.horizontal, AppTheme.Spacing.xxl)
     }
-    
+
+    // MARK: - Meals
+
     private var mealsListSection: some View {
         let dayMeals = mealsForSelectedDate()
-        
-        return VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            Text("Meals")
-                .font(AppTheme.Typography.headline())
-                .foregroundColor(AppTheme.Colors.textPrimary)
-                .padding(.horizontal, AppTheme.Spacing.xxl)
-            
+
+        return VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+            SectionLabel(text: "Meals")
+                .padding(.horizontal, AppTheme.Spacing.xl)
+
             if dayMeals.isEmpty {
-                VStack(spacing: AppTheme.Spacing.md) {
-                    Image(systemName: "fork.knife.circle")
-                        .font(.system(size: 48))
-                        .foregroundColor(AppTheme.Colors.textQuaternary)
-                    
-                    Text("No meals logged")
-                        .font(AppTheme.Typography.body(weight: .semibold))
-                        .foregroundColor(AppTheme.Colors.textTertiary)
-                    
-                    Text("Tap the + button to add your first meal")
-                        .font(AppTheme.Typography.subheadline())
-                        .foregroundColor(AppTheme.Colors.textQuaternary)
-                        .multilineTextAlignment(.center)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, AppTheme.Spacing.massive)
+                emptyState
             } else {
-                VStack(spacing: AppTheme.Spacing.md) {
+                VStack(spacing: AppTheme.Spacing.sm) {
                     ForEach(dayMeals) { meal in
-                        MealHistoryCard(meal: meal) {
-                            deleteMeal(meal)
-                        }
+                        MealHistoryCard(
+                            meal: meal,
+                            onEdit: {
+                                HapticManager.shared.light()
+                                editingMeal = meal
+                            },
+                            onDelete: { deleteMeal(meal) }
+                        )
                     }
                 }
-                .padding(.horizontal, AppTheme.Spacing.xxl)
+                .padding(.horizontal, AppTheme.Spacing.xl)
             }
         }
     }
-    
-    private func mealsForSelectedDate() -> [MealLog] {
-        allMeals.filter { meal in
-            Calendar.current.isDate(meal.timestamp, inSameDayAs: selectedDate)
+
+    private var emptyState: some View {
+        VStack(spacing: AppTheme.Spacing.md) {
+            Image(systemName: "fork.knife.circle")
+                .font(.system(size: 40))
+                .foregroundColor(AppTheme.Colors.textQuaternary)
+            Text("No meals logged")
+                .font(AppTheme.Typography.callout(weight: .semibold))
+                .foregroundColor(AppTheme.Colors.textTertiary)
+            Text("Add meals from the Home tab")
+                .font(AppTheme.Typography.subheadline())
+                .foregroundColor(AppTheme.Colors.textQuaternary)
+                .multilineTextAlignment(.center)
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, AppTheme.Spacing.huge)
     }
-    
+
+    private func mealsForSelectedDate() -> [MealLog] {
+        allMeals.filter { Calendar.current.isDate($0.timestamp, inSameDayAs: selectedDate) }
+    }
+
     private func deleteMeal(_ meal: MealLog) {
         HapticManager.shared.deleteItem()
         withAnimation(AppTheme.Animation.spring) {
             modelContext.delete(meal)
+            try? modelContext.save()
         }
     }
 }
 
-struct SummaryPill: View {
-    let icon: String
-    let value: String
-    let label: String
-    
-    var body: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
-            Image(systemName: icon)
-                .font(.system(size: 24))
-                .foregroundColor(AppTheme.Colors.accent)
-                .frame(width: 44, height: 44)
-                .background(AppTheme.Colors.surfaceHighlight)
-                .cornerRadius(AppTheme.CornerRadius.md)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(value)
-                    .font(AppTheme.Typography.title3(weight: .bold))
-                    .foregroundColor(AppTheme.Colors.textPrimary)
-                Text(label)
-                    .font(AppTheme.Typography.caption1())
-                    .foregroundColor(AppTheme.Colors.textTertiary)
-            }
-            
-            Spacer()
-        }
-        .frame(maxWidth: .infinity)
-        .padding(AppTheme.Spacing.lg)
-        .background(AppTheme.Colors.surfaceHighlight)
-        .cornerRadius(AppTheme.CornerRadius.lg)
-    }
-}
+// MARK: - Components
 
-struct MacroPill: View {
+struct MacroChip: View {
     let name: String
     let value: Double
     let color: Color
-    
+
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.xs) {
-            Text(name)
-                .font(AppTheme.Typography.caption1(weight: .bold))
-                .foregroundColor(AppTheme.Colors.textTertiary)
+        VStack(spacing: 3) {
+            HStack(spacing: 5) {
+                Circle().fill(color).frame(width: 6, height: 6)
+                Text(name)
+                    .font(AppTheme.Typography.caption2(weight: .medium))
+                    .foregroundColor(AppTheme.Colors.textTertiary)
+            }
             Text("\(Int(value))g")
-                .font(AppTheme.Typography.caption1(weight: .semibold))
+                .font(AppTheme.Typography.subheadline(weight: .bold))
                 .foregroundColor(AppTheme.Colors.textPrimary)
         }
-        .padding(.horizontal, AppTheme.Spacing.md)
-        .padding(.vertical, AppTheme.Spacing.sm)
-        .background(color.opacity(0.2))
-        .cornerRadius(AppTheme.CornerRadius.sm)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, AppTheme.Spacing.md)
+        .background(AppTheme.Colors.surfaceHighlight, in: RoundedRectangle(cornerRadius: AppTheme.CornerRadius.md))
     }
 }
 
 struct MealHistoryCard: View {
     let meal: MealLog
+    let onEdit: () -> Void
     let onDelete: () -> Void
-    
+
     var body: some View {
         HStack(spacing: AppTheme.Spacing.md) {
             Text(meal.emoji)
-                .font(.system(size: 32))
-                .frame(width: 56, height: 56)
-                .background(AppTheme.Colors.surfaceHighlight)
-                .cornerRadius(AppTheme.CornerRadius.lg)
-            
-            VStack(alignment: .leading, spacing: 4) {
+                .font(.system(size: 24))
+                .frame(width: 46, height: 46)
+                .background(AppTheme.Colors.surfaceHighlight, in: RoundedRectangle(cornerRadius: AppTheme.CornerRadius.md))
+
+            VStack(alignment: .leading, spacing: 3) {
                 Text(meal.name)
-                    .font(AppTheme.Typography.body(weight: .semibold))
+                    .font(AppTheme.Typography.callout(weight: .semibold))
                     .foregroundColor(AppTheme.Colors.textPrimary)
-                
-                HStack(spacing: AppTheme.Spacing.sm) {
+                    .lineLimit(1)
+                HStack(spacing: 6) {
                     Text(meal.timestamp, style: .time)
-                        .font(AppTheme.Typography.caption1())
-                        .foregroundColor(AppTheme.Colors.textTertiary)
-                    
-                    Circle()
-                        .fill(AppTheme.Colors.textQuaternary)
-                        .frame(width: 3, height: 3)
-                    
+                    Circle().fill(AppTheme.Colors.textQuaternary).frame(width: 3, height: 3)
                     Text(meal.mealType)
-                        .font(AppTheme.Typography.caption1())
-                        .foregroundColor(AppTheme.Colors.textTertiary)
                 }
+                .font(AppTheme.Typography.caption1())
+                .foregroundColor(AppTheme.Colors.textTertiary)
             }
-            
+
             Spacer()
-            
-            VStack(alignment: .trailing, spacing: 4) {
+
+            VStack(alignment: .trailing, spacing: 3) {
                 Text("\(meal.calories) kcal")
                     .font(AppTheme.Typography.subheadline(weight: .bold))
                     .foregroundColor(AppTheme.Colors.textPrimary)
-                
-                HStack(spacing: 4) {
-                    Text("P:\(Int(meal.protein))")
-                    Text("C:\(Int(meal.carbs))")
-                    Text("F:\(Int(meal.fat))")
+                HStack(spacing: 5) {
+                    Text("P\(Int(meal.protein))")
+                    Text("C\(Int(meal.carbs))")
+                    Text("F\(Int(meal.fat))")
                 }
                 .font(AppTheme.Typography.caption2())
                 .foregroundColor(AppTheme.Colors.textTertiary)
             }
-            
-            Button(action: onDelete) {
-                Image(systemName: "trash")
-                    .font(AppTheme.Typography.footnote())
-                    .foregroundColor(AppTheme.Colors.textQuaternary)
-                    .frame(width: 32, height: 32)
+        }
+        .padding(AppTheme.Spacing.md)
+        .cardStyle()
+        .contentShape(RoundedRectangle(cornerRadius: AppTheme.CornerRadius.xl))
+        .onTapGesture(perform: onEdit)
+        .contextMenu {
+            Button(action: onEdit) {
+                Label("Edit Meal", systemImage: "pencil")
+            }
+            Button(role: .destructive, action: onDelete) {
+                Label("Delete Meal", systemImage: "trash")
             }
         }
-        .padding(AppTheme.Spacing.lg)
-        .cardStyle()
     }
 }
 
 struct CalendarPickerView: View {
     @Environment(\.dismiss) var dismiss
     @Binding var selectedDate: Date
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
                 AppTheme.Colors.background.ignoresSafeArea()
-                
+
                 DatePicker(
                     "Select Date",
                     selection: $selectedDate,
@@ -324,10 +300,9 @@ struct CalendarPickerView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                    .foregroundColor(AppTheme.Colors.accent)
+                    Button("Done") { dismiss() }
+                        .fontWeight(.semibold)
+                        .tint(AppTheme.Colors.accent)
                 }
             }
         }
